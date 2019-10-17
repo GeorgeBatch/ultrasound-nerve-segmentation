@@ -126,6 +126,7 @@ def create_train_data():
         # we got to this point, meaning that image_name is a name of a training image and not a mask.
 
         # recreate the mask's name fot this image
+        # noinspection PyTypeChecker
         image_mask_name = image_name.split('.')[0] + '_mask.tif'
         # get the patient number of the image
         patient_num = image_name.split('_')[0]
@@ -133,7 +134,6 @@ def create_train_data():
         img = cv2.imread(os.path.join(train_data_path, image_name), cv2.IMREAD_GRAYSCALE)
         # read the corresponding mask to an np.array
         img_mask = cv2.imread(os.path.join(train_data_path, image_mask_name), cv2.IMREAD_GRAYSCALE)
-
 
         imgs[i, :, :, 0] = img
         imgs_mask[i, :, :, 0] = img_mask
@@ -521,11 +521,13 @@ def get_unet_inception_2head(optimizer):
 
     return model
 
-# shorter name and allows to try other versions of the unet
-get_unet = get_unet_inception_2head
 
 # --------------------------------------------------------------------------------------------------------------------
+# get_unet() allows to try other versions of the u-net, if more are specified
+get_unet = get_unet_inception_2head
 
+
+# --------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
 
     img_rows = IMG_ROWS
@@ -604,6 +606,25 @@ def preprocess(imgs, to_rows=None, to_cols=None):
     return imgs_p
 
 
+def get_object_existence(mask_array):
+    """Create an array specifying nerve presence on each of the masks in the mask_array
+
+    :param mask_array: 4D tensor of a shape (samples, rows, cols, channels=1) with masks
+    :return:
+    """
+    print("type(mask_array):", type(mask_array))
+    print("mask_array.shape:", mask_array.shape)
+    return np.array([int(np.sum(mask_array[i, :, :, 0]) > 0) for i in range(mask_array.shape[0])])
+
+
+def load_pretrained_model(model, pretrained_path):
+    # load pretrained model from a given path, if there is a pretrained model
+    if pretrained_path is not None:
+        if not os.path.exists(pretrained_path):
+            raise ValueError('No such pre-trained path exists')
+        model.load_weights(pretrained_path)
+
+
 class Learner:
     """Perform training on the train data and predicting on the test data
 
@@ -671,16 +692,6 @@ class Learner:
         self.mean, self.std = np.mean(data), np.std(data)
         self.save_meanstd()
         return data
-
-    def get_object_existance(self, mask_array):
-        """Create an array specifying nerve presence on each of the masks in the mask_array
-
-        :param mask_array: 4D tensor of a shape (samples, rows, cols, channels=1) with masks
-        :return:
-        """
-        print("type(mask_array):", type(mask_array))
-        print("mask_array.shape:", mask_array.shape)
-        return np.array([int(np.sum(mask_array[i, :, :, 0]) > 0) for i in range(mask_array.shape[0])])
 
     def standardise(self, array, to_float=False):
         """Standardise the given array.
@@ -792,13 +803,6 @@ class Learner:
         np.save(self.test_mask_res, imgs_mask_test[0])
         np.save(self.test_mask_exist_res, imgs_mask_test[1])
 
-    def __pretrain_model_load(self, model, pretrained_path):
-        # load pretrained model from a given path, if there is a pretrained model
-        if pretrained_path is not None:
-            if not os.path.exists(pretrained_path):
-                raise ValueError('No such pre-trained path exists')
-            model.load_weights(pretrained_path)
-
     def fit(self, x_train, y_train, x_valid, y_valid, pretrained_path):
         """Fit the model to the training data.
         
@@ -816,8 +820,8 @@ class Learner:
         # y_train_2 and y_valid_2 are training and validation response arrays of nerve presence - needed for 2nd output
         # shape (samples_train, ) and (samples_valid, ) respectively
         print("type(y_train):", type(y_train))
-        y_train_2 = self.get_object_existance(y_train)
-        y_valid_2 = self.get_object_existance(y_valid)
+        y_train_2 = get_object_existence(y_train)
+        y_valid_2 = get_object_existence(y_valid)
 
         # create and compile the model - the Learning rate scheduler choice is very important here
         optimizer = Adam(lr=0.0045)
@@ -829,7 +833,7 @@ class Learner:
         early_s = EarlyStopping(monitor='val_loss', patience=5, verbose=1)
 
         # load pretrained model from a given path, if there is a pretrained model
-        self.__pretrain_model_load(model, pretrained_path)
+        load_pretrained_model(model, pretrained_path)
         model.fit(
             x_train, [y_train, y_train_2],
             validation_data=(x_valid, [y_valid, y_valid_2]),
@@ -872,7 +876,6 @@ class Learner:
 
 
 # --------------------------------------------------------------------------------------------------------------------
-
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-s", "--split_random", action='store', type='int', dest='split_random', default=1)
@@ -958,7 +961,7 @@ def submission():
 
     total = imgs_test.shape[0]
     ids = []
-    rles = []
+    rles = []  # run-length-encodings
     for i in range(total):
         img = imgs_test[i, :, :, 0]
         img_exist = imgs_exist_test[i]
@@ -989,7 +992,5 @@ def submission():
 
 
 # --------------------------------------------------------------------------------------------------------------------
-
-
 if __name__ == '__main__':
     submission()
