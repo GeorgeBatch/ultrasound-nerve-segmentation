@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="" />
+    <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/ultrasound-nerve-segmentation.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ultrasound-nerve-segmentation.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1635">
-              <caret line="109" column="13" selection-start-line="109" selection-start-column="13" selection-end-line="109" selection-end-column="13" />
+            <state relative-caret-position="480">
+              <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
             </state>
           </provider>
         </entry>
@@ -77,6 +80,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
   </component>
   <component name="RunDashboard">
@@ -126,8 +130,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1635">
-          <caret line="109" column="13" selection-start-line="109" selection-start-column="13" selection-end-line="109" selection-end-column="13" />
+        <state relative-caret-position="480">
+          <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
         </state>
       </provider>
     </entry>
