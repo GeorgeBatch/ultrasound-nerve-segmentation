@@ -229,7 +229,7 @@ if __name__ == '__main__':
 import numpy as np
 from keras import backend as K  # tensorflow backend
 
-smooth = 1
+smooth = 1.
 
 
 def dice_coef(mask_1, mask_2, smooth=1):
@@ -578,8 +578,8 @@ if __name__ == '__main__':
     model = get_unet(Adam(lr=1e-5))
 
     x = np.random.random((1, img_rows, img_cols, 1))
-    res = model.predict(x, 1)
-    print(res)
+    result = model.predict(x, 1)
+    print(result)
     print('params', model.count_params())
     print('layer num', len(model.layers))
 
@@ -587,10 +587,9 @@ if __name__ == '__main__':
 # Train
 # ====================================================================================================================
 
-from skimage.transform import resize
+# standard-module imports
 import numpy as np
-from keras.models import Model
-from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, BatchNormalization
+import cv2
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras import backend as K
@@ -599,16 +598,21 @@ from keras import backend as K
 from skimage.io import imsave
 
 
-# TF dimension ordering in this code - use axis=3 in BatchNormalization()
-K.set_image_data_format('channels_last')
-
-img_rows = 80
-img_cols = 112
-
-smooth = 1.
+# # separate-module imports
+#
+# from u_model import get_unet, IMG_COLS as img_cols, IMG_ROWS as img_rows
+# from data import load_train_data, load_test_data, load_patient_num
+# from utils import save_pickle, load_pickle, count_enum
 
 
 def preprocess(imgs, to_rows=None, to_cols=None):
+    """Resize all images in a 4D tensor of images of the shape (samples, rows, cols, channels).
+
+    :param imgs: a 4D tensor of images of the shape (samples, rows, cols, channels)
+    :param to_rows: new number of rows for images to be resized to
+    :param to_cols: new number of rows for images to be resized to
+    :return: a 4D tensor of images of the shape (samples, to_rows, to_cols, channels)
+    """
     if to_rows is None or to_cols is None:
         to_rows = img_rows
         to_cols = img_cols
@@ -664,7 +668,6 @@ def train_and_predict():
     print('Loading and preprocessing test data...')
     print('-' * 30)
     imgs_test = load_test_data()
-    imgs_id_test = load_test_ids()
     imgs_test = preprocess(imgs_test)
 
     imgs_test = imgs_test.astype('float32')

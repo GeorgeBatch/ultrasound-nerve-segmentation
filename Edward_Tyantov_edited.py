@@ -277,7 +277,7 @@ if __name__ == '__main__':
 import numpy as np
 from keras import backend as K  # tensorflow backend
 
-smooth = 1
+smooth = 1.
 
 
 def dice_coef(mask_1, mask_2, smooth=1):
@@ -346,6 +346,7 @@ from keras.layers import Input, add, concatenate, Conv2D, MaxPooling2D, UpSampli
 from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
 from keras.layers.advanced_activations import ELU, LeakyReLU
 from keras.optimizers import Adam
+from keras import backend as K
 
 # # separate-module imports
 # from metric import dice_coef, dice_coef_loss
@@ -650,9 +651,9 @@ def count_enum(words):
 # ====================================================================================================================
 
 # standard-module imports
-from optparse import OptionParser
-import cv2, os, shutil, random
 import numpy as np
+import cv2, os, shutil, random
+from optparse import OptionParser
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
@@ -662,6 +663,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 # from u_model import get_unet, IMG_COLS as img_cols, IMG_ROWS as img_rows
 # from data import load_train_data, load_test_data, load_patient_num
 # from utils import save_pickle, load_pickle, count_enum
+
 
 def preprocess(imgs, to_rows=None, to_cols=None):
     """Resize all images in a 4D tensor of images of the shape (samples, rows, cols, channels).
