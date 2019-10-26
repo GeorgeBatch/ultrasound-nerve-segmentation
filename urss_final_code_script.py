@@ -33,6 +33,7 @@ img_nerve_presence = os.path.join(preprocess_path, 'nerve_presence.npy')
 img_test_path = os.path.join(preprocess_path, 'imgs_test.npy')
 img_test_id_path = os.path.join(preprocess_path, 'imgs_id_test.npy')
 
+
 print(os.listdir(preprocess_path))
 # ====================================================================================================================
 # Data
@@ -589,7 +590,7 @@ if __name__ == '__main__':
 from skimage.transform import resize
 import numpy as np
 from keras.models import Model
-from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose, BatchNormalization
+from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, BatchNormalization
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras import backend as K
@@ -598,7 +599,7 @@ from keras import backend as K
 from skimage.io import imsave
 
 
-# # TF dimension ordering in this code - use axis=3 in BatchNormalization()
+# TF dimension ordering in this code - use axis=3 in BatchNormalization()
 K.set_image_data_format('channels_last')
 
 img_rows = 80
@@ -695,19 +696,38 @@ if __name__ == '__main__':
 # Submission
 # ====================================================================================================================
 
+# standard-module imports
+from skimage.transform import resize
+from itertools import chain
+
+# # separate-module imports
+# from data import load_test_data
+
 def prep(img):
+    """Prepare the image for to be used in a submission
+
+    :param img: 2D image
+    :return: resized version of an image
+    """
     img = img.astype('float32')
-    img = (img > 0.5).astype(np.uint8)  # threshold
     img = resize(img, (image_rows, image_cols), preserve_range=True)
+    img = (img > 0.5).astype(np.uint8)  # threshold
     return img
 
 
 def run_length_enc(label):
-    from itertools import chain
+    """Create a run-length-encoding of an image
+
+    :param label: image to be encoded
+    :return: string with run-length-encoding of an image
+    """
     x = label.transpose().flatten()
     y = np.where(x > 0)[0]
-    if len(y) < 10:  # consider as empty
+
+    # consider empty all masks with less than 10 pixels being greater than 0
+    if len(y) < 10:
         return ''
+
     z = np.where(np.diff(y) > 1)[0]
     start = np.insert(y[z + 1], 0, y[0])
     end = np.append(y[z], y[-1])
@@ -718,10 +738,14 @@ def run_length_enc(label):
 
 
 def submission():
-    # Uncomment the next line if the coede is separated in different files
-    # from data import load_test_data
+    """Create a submission .csv file.
 
+    The file will have 2 cols: img, pixels.
+        The image column consists of the ids of test images.
+        The pixels column consists of the run-length-encodings of the corresponding images.
+    """
     imgs_id_test = load_test_ids()
+
     print('Loading imgs_test from imgs_mask_test.npy')
     imgs_test = np.load('imgs_mask_test.npy')
     print('Loading imgs_exist_test from imgs_mask_test_present.npy')
@@ -734,7 +758,7 @@ def submission():
 
     total = imgs_test.shape[0]
     ids = []
-    rles = []
+    rles = []  # run-length-encodings
     for i in range(total):
         img = imgs_test[i, :, :, 0]
         img_exist = imgs_exist_test[i]
@@ -742,7 +766,7 @@ def submission():
 
         # new probability of nerve presence
         new_prob = (img_exist + min(1, np.sum(img) / 10000.0) * 5 / 3) / 2
-        # setting mask to array of zeros if new probabiliry of nerve presence < 0.5
+        # setting mask to array of zeros if new probability of nerve presence < 0.5
         if np.sum(img) > 0 and new_prob < 0.5:
             img = np.zeros((image_rows, image_cols))
 
@@ -765,8 +789,6 @@ def submission():
 
 
 # --------------------------------------------------------------------------------------------------------------------
-
-
 if __name__ == '__main__':
     submission()
 

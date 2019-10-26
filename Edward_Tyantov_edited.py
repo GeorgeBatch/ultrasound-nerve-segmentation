@@ -976,6 +976,7 @@ if __name__ == '__main__':
 
 # standard-module imports
 from skimage.transform import resize
+from itertools import chain
 
 # # separate-module imports
 # from data import load_test_data
@@ -999,7 +1000,6 @@ def run_length_enc(label):
     :param label: image to be encoded
     :return: string with run-length-encoding of an image
     """
-    from itertools import chain
     x = label.transpose().flatten()
     y = np.where(x > 0)[0]
 
