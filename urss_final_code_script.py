@@ -35,9 +35,12 @@ img_test_id_path = os.path.join(preprocess_path, 'imgs_id_test.npy')
 
 
 print(os.listdir(preprocess_path))
-# ====================================================================================================================
-# Data
-# ====================================================================================================================
+
+########################################################################################################################
+# ======================================================================================================================
+# data
+# ======================================================================================================================
+########################################################################################################################
 
 # standard-module imports
 import os
@@ -129,7 +132,8 @@ def create_train_data():
     Create an np.array with train masks and save it into a .npy file.
 
     The np.array with patient numbers will have shape (samples, ).
-        So for each train image saved, the patient number will be recorded exactly in the same order the images were saved.
+        So for each train image saved, the patient number will be recorded exactly in the same order the
+        images were saved.
     The np.array with train images will have shape (samples, rows, cols, channels).
     The np.array with train masks will have shape (samples, rows, cols, channels).
         The masks are saved in the same order as the images.
@@ -145,9 +149,9 @@ def create_train_data():
     img_patients = np.ndarray((total,), dtype=np.uint8)
     for image_name in images:
 
-        # With "continue" skip the mask image in the iteration because the mask will be saved together with the image,
-        # when we get the image in one of the next iterations. This guarantees that the images, masks and corresponding
-        # patient numbers are all saved in the correct order.
+        # With "continue" skip the mask image in the iteration because the mask will be saved together with
+        # the image, when we get the image in one of the next iterations. This guarantees that the images,
+        # masks and corresponding patient numbers are all saved in the correct order.
         if 'mask' in image_name:
             continue
 
@@ -186,8 +190,8 @@ def create_test_data():
     Create an np.array with ids for all images and save it into a .npy file.
 
     The np.array with test data will have shape (samples, rows, cols, channels).
-    The np.array with test data ids will have shape (samples,). Each image id will be a number corresponding to the
-    number in a test image name. For example image '8.tif' will have 8 as its image id.
+    The np.array with test data ids will have shape (samples,). Each image id will be a number
+    corresponding to the number in a test image name. For example image '8.tif' will have 8 as its image id.
     """
     test_data_path = os.path.join(data_path, 'test')
     images = os.listdir(test_data_path)
@@ -215,15 +219,18 @@ def create_test_data():
     print('Saving to .npy files done.')
 
 
-# --------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     create_train_data()
     create_test_data()
 
-# ====================================================================================================================
-# metric - needed for u_model
-# ====================================================================================================================
+########################################################################################################################
+# ======================================================================================================================
+# metric
+# ======================================================================================================================
+########################################################################################################################
+# needed for u_model
 
 # standard-module imports
 import numpy as np
@@ -236,7 +243,8 @@ def dice_coef(mask_1, mask_2, smooth=1):
     """Compute the dice coefficient between two equal-sized masks.
 
     Dice Coefficient: https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient
-    We need to add smooth, because otherwise 2 empty (all zeros) masks will throw an error instead of giving 1 as an output.
+    We need to add smooth, because otherwise 2 empty (all zeros) masks will throw an error instead of
+    giving 1 as an output.
 
     :param mask_1: first mask
     :param mask_2: second mask
@@ -267,7 +275,7 @@ def np_dice_coef(mask_1, mask_2, smooth=1):
     Used for testing on artificially generated np.arrays
 
     Dice Coefficient: https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient
-    We need to add smooth, because otherwise 2 empty (all zeros) masks will throw an error instead of giving 1 as an output.
+    Need smooth, because otherwise 2 empty (all zeros) masks will throw an error instead of giving 1 as an output.
 
     :param mask_1: first mask
     :param mask_2: second mask
@@ -279,7 +287,7 @@ def np_dice_coef(mask_1, mask_2, smooth=1):
     return (2. * np.sum(tr * pr) + smooth) / (np.sum(tr) + np.sum(pr) + smooth)
 
 
-# --------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     a = np.random.random((420, 100))
@@ -287,9 +295,12 @@ if __name__ == '__main__':
     res = np_dice_coef(a, b)
     print(res)
 
-# ====================================================================================================================
+
+########################################################################################################################
+# ======================================================================================================================
 # u_model - needed for train
-# ====================================================================================================================
+# ======================================================================================================================
+########################################################################################################################
 
 # standard-module imports
 import numpy as np
@@ -307,9 +318,9 @@ IMG_ROWS, IMG_COLS = 80, 112
 K.set_image_data_format('channels_last')  # (number of images, rows per image, cols per image, channels)
 
 
-# --------------------------------------------------------------------------------------------------------------------
+# ======================================================================================================================
 # Different blocks used for U-net
-# --------------------------------------------------------------------------------------------------------------------
+# ======================================================================================================================
 
 def inception_block(inputs, filters, split=False, activation='relu'):
     """Create an inception block with 2 options described in:
@@ -322,7 +333,7 @@ def inception_block(inputs, filters, split=False, activation='relu'):
         Create an inception block described in v2
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
-    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters).
     :param split: option of inception block
     :param activation: activation function to use everywhere in the block
     :return: output of the inception block, given inputs
@@ -401,7 +412,7 @@ def rblock(inputs, kernel_size, filters, scale=0.1):
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
-    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution)
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters)
     :param kernel_size: An integer or tuple/list of 2 integers, specifying the height and width of the 2D convolution
                         window. Can be a single integer to specify the same value for all spatial dimensions.
     :param scale: scaling factor preventing the network from dying out
@@ -437,58 +448,63 @@ def NConv2D(filters, kernel_size, padding='same', strides=(1, 1)):
 
     return f
 
-
-# --------------------------------------------------------------------------------------------------------------------
+# ======================================================================================================================
 # Different U-net architectures
-# --------------------------------------------------------------------------------------------------------------------
+# ======================================================================================================================
 
 
-def get_unet_inception_2head(optimizer):
+def get_unet_inception_2head_maxpooling2d(optimizer):
     """
     Creating and compiling the U-net
-    :param optimizer: specifies the optimiser for u-net
-    :return: compiled u-net model
+
+    Details:
+        2 outputs:
+            main output for predicting the label for each pixel
+            auxiliary output for predicting probability of nerve presence
+        Batch Normalization almost everywhere
+        Dropout everywhere
+        Inception blocks
+        Maxpooling with pool size (2, 2)
+
+    :param optimizer: specifies the optimiser for the u-net, e.g. Adam, RMSProp, etc.
+    :return: compiled u-net, Keras.Model object
     """
 
     split = True
     act = 'elu'
 
+    # input
+    inputs = Input((IMG_ROWS, IMG_COLS, 1), name='main_input')
+    print("inputs:", inputs._keras_shape)
+
     #
     # down the U-net
     #
 
-    inputs = Input((IMG_ROWS, IMG_COLS, 1), name='main_input')
-    print("inputs:", inputs._keras_shape)
     conv1 = inception_block(inputs, 32, split=split, activation=act)
     print("conv1", conv1._keras_shape)
-    # conv1 = inception_block(conv1, 32, split=split, activation=act)
-
-    # pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
-    pool1 = NConv2D(32, kernel_size=(3, 3), padding='same', strides=(2, 2))(conv1)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
     print("pool1", pool1._keras_shape)
     pool1 = Dropout(0.5)(pool1)
     print("pool1", pool1._keras_shape)
 
     conv2 = inception_block(pool1, 64, split=split, activation=act)
     print("conv2", conv2._keras_shape)
-    # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
-    pool2 = NConv2D(64, kernel_size=(3, 3), padding='same', strides=(2, 2))(conv2)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
     print("pool2", pool2._keras_shape)
     pool2 = Dropout(0.5)(pool2)
     print("pool2", pool2._keras_shape)
 
     conv3 = inception_block(pool2, 128, split=split, activation=act)
     print("conv3", conv3._keras_shape)
-    # pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
-    pool3 = NConv2D(128, kernel_size=(3, 3), padding='same', strides=(2, 2))(conv3)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
     print("pool3", pool3._keras_shape)
     pool3 = Dropout(0.5)(pool3)
     print("pool3", pool3._keras_shape)
 
     conv4 = inception_block(pool3, 256, split=split, activation=act)
     print("conv4", conv4._keras_shape)
-    # pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
-    pool4 = NConv2D(256, kernel_size=(3, 3), padding='same', strides=(2, 2))(conv4)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
     print("pool4", pool4._keras_shape)
     pool4 = Dropout(0.5)(pool4)
     print("pool4", pool4._keras_shape)
@@ -498,12 +514,11 @@ def get_unet_inception_2head(optimizer):
     #
     conv5 = inception_block(pool4, 512, split=split, activation=act)
     print("conv5", conv5._keras_shape)
-    # conv5 = inception_block(conv5, 512, split=split, activation=act)
     conv5 = Dropout(0.5)(conv5)
     print("conv5", conv5._keras_shape)
 
     #
-    # auxiliary head for predicting probability of nerve presence
+    # auxiliary output for predicting probability of nerve presence
     #
     pre = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid')(conv5)
     pre = Flatten()(pre)
@@ -542,11 +557,138 @@ def get_unet_inception_2head(optimizer):
     up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), after_conv1], axis=3)
     conv9 = inception_block(up9, 32, split=split, activation=act)  # batch_mode=2
     print("conv9", conv9._keras_shape)
-    # conv9 = inception_block(conv9, 32, split=split, activation=act) # batch_mode=2
     conv9 = Dropout(0.5)(conv9)
     print("conv9", conv9._keras_shape)
 
-    # output
+    # main output
+    conv10 = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid', name='main_output')(
+        conv9)
+    print("conv10", conv10._keras_shape)
+
+    # creating a model
+    model = Model(inputs=inputs, outputs=[conv10, aux_out])
+
+    # compiling the model
+    model.compile(optimizer=optimizer,
+                  loss={'main_output': dice_coef_loss, 'aux_output': 'binary_crossentropy'},
+                  metrics={'main_output': dice_coef, 'aux_output': 'acc'},
+                  loss_weights={'main_output': 1., 'aux_output': 0.5})
+
+    return model
+
+# ======================================================================================================================
+# U-net with Inception blocks, Normalised 2D Convolutions instead of Maxpooling
+# ======================================================================================================================
+
+
+def get_unet_inception_2head_nconv2d(optimizer):
+    """
+    Creating and compiling the U-net
+
+    Details:
+        2 outputs:
+            main output for predicting the label for each pixel
+            auxiliary output for predicting probability of nerve presence
+        Batch Normalization almost everywhere
+        Dropout everywhere
+        Inception blocks
+        Normalised 2D Convolutions with stride (2, 2) instead of Maxpooling with pool size (2, 2)
+
+    :param optimizer: specifies the optimiser for the u-net, e.g. Adam, RMSProp, etc.
+    :return: compiled u-net, Keras.Model object
+    """
+
+    split = True
+    act = 'elu'
+
+    # input
+    inputs = Input((IMG_ROWS, IMG_COLS, 1), name='main_input')
+    print("inputs:", inputs._keras_shape)
+
+    #
+    # down the U-net
+    #
+
+    conv1 = inception_block(inputs, 32, split=split, activation=act)
+    print("conv1", conv1._keras_shape)
+    pool1 = NConv2D(32, kernel_size=(3, 3), strides=(2, 2))(conv1)
+    print("pool1", pool1._keras_shape)
+    pool1 = Dropout(0.5)(pool1)
+    print("pool1", pool1._keras_shape)
+
+    conv2 = inception_block(pool1, 64, split=split, activation=act)
+    print("conv2", conv2._keras_shape)
+    pool2 = NConv2D(64, kernel_size=(3, 3), strides=(2, 2))(conv2)
+    print("pool2", pool2._keras_shape)
+    pool2 = Dropout(0.5)(pool2)
+    print("pool2", pool2._keras_shape)
+
+    conv3 = inception_block(pool2, 128, split=split, activation=act)
+    print("conv3", conv3._keras_shape)
+    pool3 = NConv2D(128, kernel_size=(3, 3), strides=(2, 2))(conv3)
+    print("pool3", pool3._keras_shape)
+    pool3 = Dropout(0.5)(pool3)
+    print("pool3", pool3._keras_shape)
+
+    conv4 = inception_block(pool3, 256, split=split, activation=act)
+    print("conv4", conv4._keras_shape)
+    pool4 = NConv2D(256, kernel_size=(3, 3), strides=(2, 2))(conv4)
+    print("pool4", pool4._keras_shape)
+    pool4 = Dropout(0.5)(pool4)
+    print("pool4", pool4._keras_shape)
+
+    #
+    # bottom level of the U-net
+    #
+    conv5 = inception_block(pool4, 512, split=split, activation=act)
+    print("conv5", conv5._keras_shape)
+    conv5 = Dropout(0.5)(conv5)
+    print("conv5", conv5._keras_shape)
+
+    #
+    # auxiliary output for predicting probability of nerve presence
+    #
+    pre = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid')(conv5)
+    pre = Flatten()(pre)
+    aux_out = Dense(1, activation='sigmoid', name='aux_output')(pre)
+
+    #
+    # up the U-net
+    #
+
+    after_conv4 = rblock(conv4, 1, 256)
+    print("after_conv4", after_conv4._keras_shape)
+    up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), after_conv4], axis=3)
+    conv6 = inception_block(up6, 256, split=split, activation=act)
+    print("conv6", conv6._keras_shape)
+    conv6 = Dropout(0.5)(conv6)
+    print("conv6", conv6._keras_shape)
+
+    after_conv3 = rblock(conv3, 1, 128)
+    print("after_conv3", after_conv3._keras_shape)
+    up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), after_conv3], axis=3)
+    conv7 = inception_block(up7, 128, split=split, activation=act)
+    print("conv7", conv7._keras_shape)
+    conv7 = Dropout(0.5)(conv7)
+    print("conv7", conv7._keras_shape)
+
+    after_conv2 = rblock(conv2, 1, 64)
+    print("after_conv2", after_conv2._keras_shape)
+    up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), after_conv2], axis=3)
+    conv8 = inception_block(up8, 64, split=split, activation=act)
+    print("conv8", conv8._keras_shape)
+    conv8 = Dropout(0.5)(conv8)
+    print("conv8", conv8._keras_shape)
+
+    after_conv1 = rblock(conv1, 1, 32)
+    print("after_conv1", after_conv1._keras_shape)
+    up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), after_conv1], axis=3)
+    conv9 = inception_block(up9, 32, split=split, activation=act)
+    print("conv9", conv9._keras_shape)
+    conv9 = Dropout(0.5)(conv9)
+    print("conv9", conv9._keras_shape)
+
+    # main output
     conv10 = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid', name='main_output')(
         conv9)
     print("conv10", conv10._keras_shape)
@@ -563,12 +705,20 @@ def get_unet_inception_2head(optimizer):
     return model
 
 
-# --------------------------------------------------------------------------------------------------------------------
+########################################################################################################################
+# Choose a possible architecture combination
+########################################################################################################################
+
 # get_unet() allows to try other versions of the u-net, if more are specified
-get_unet = get_unet_inception_2head
+get_unet = get_unet_inception_2head_nconv2d
+
+# inception_block() allows to try other versions of the inception blocks
+inception_block = inception_block
 
 
-# --------------------------------------------------------------------------------------------------------------------
+########################################################################################################################
+
+# ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
 
     img_rows = IMG_ROWS
@@ -583,9 +733,11 @@ if __name__ == '__main__':
     print('params', model.count_params())
     print('layer num', len(model.layers))
 
-# ====================================================================================================================
-# Train
-# ====================================================================================================================
+########################################################################################################################
+# ======================================================================================================================
+# train
+# ======================================================================================================================
+########################################################################################################################
 
 # standard-module imports
 import numpy as np
@@ -695,9 +847,11 @@ if __name__ == '__main__':
     train_and_predict()
 
 
-# ====================================================================================================================
+########################################################################################################################
+# ======================================================================================================================
 # Submission
-# ====================================================================================================================
+# ======================================================================================================================
+########################################################################################################################
 
 # standard-module imports
 from skimage.transform import resize
