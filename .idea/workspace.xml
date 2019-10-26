@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Edward_Tyantov_edited.py" beforeDir="false" afterPath="$PROJECT_DIR$/Edward_Tyantov_edited.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/urss_final_code_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/urss_final_code_script.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,34 +12,20 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
-      <split-first>
-        <leaf>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/urss_final_code_script.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="361">
-                  <caret line="614" column="7" lean-forward="true" selection-start-line="614" selection-start-column="7" selection-end-line="614" selection-end-column="7" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/Edward_Tyantov_edited.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="257">
-                  <caret line="666" selection-start-line="666" selection-end-line="666" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/urss_final_code_script.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="381">
+              <caret line="57" column="21" lean-forward="true" selection-start-line="57" selection-start-column="21" selection-end-line="57" selection-end-column="21" />
+              <folding>
+                <element signature="e#752#761#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -77,7 +61,10 @@
       <find>img_cols</find>
       <find>os</find>
       <find>np</find>
+      <find>prepro</find>
       <find>K.</find>
+      <find>NConv2D</find>
+      <find>padding</find>
     </findStrings>
     <replaceStrings>
       <replace>split</replace>
@@ -91,8 +78,8 @@
       <list>
         <option value="$PROJECT_DIR$/Edward_Tyantow_edited.py" />
         <option value="$USER_HOME$/Downloads/urss-all-code.py" />
-        <option value="$PROJECT_DIR$/urss_final_code_script.py" />
         <option value="$PROJECT_DIR$/Edward_Tyantov_edited.py" />
+        <option value="$PROJECT_DIR$/urss_final_code_script.py" />
       </list>
     </option>
   </component>
@@ -140,6 +127,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18526466" />
       <window_info id="Structure" order="1" weight="0.25" />
@@ -150,10 +138,10 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" visible="true" weight="0.32983682" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" weight="0.32983682" />
       <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32983682" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" visible="true" weight="0.32983682" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" weight="0.32983682" />
       <window_info anchor="bottom" id="Python Console" order="11" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -169,7 +157,9 @@
     <MESSAGE value="Add the link to MJ's github" />
     <MESSAGE value=".idea configurations" />
     <MESSAGE value="workspace update" />
-    <option name="LAST_COMMIT_MESSAGE" value="workspace update" />
+    <MESSAGE value="Update urss_final_code_script.py:&#10;1) add documentation to the rest of the functions&#10;2) delete redundant imports and variable assignments in train module&#10;3) delete redundant line of load_test_ids() from train_and_predict()&#10;&#10;Update Edward_Tyantov_edited.py:&#10;1) from keras import backend as K # in metrics module&#10;&#10;Add some words to project dictionary, e.g. keras, preprocess, urss, etc." />
+    <MESSAGE value="Style updates:&#10;1) use hashtag lines to highlight the module boundaries&#10;2) rename the sections according to future file names, e.g. Data -&gt; data&#10;   because the module is named data.py&#10;3) make comments fit 80-characters limit&#10;&#10;&#10;Code updates:&#10;1) create a block of code where the choice of architecture will be made&#10;2) make 2 get_unet_... functions: with NConv2D and with MaxPooling&#10;3) update docstrings for these 2 functions&#10;4) delete commented lines of code&#10;5) edit some minor comments within the 2 functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Style updates:&#10;1) use hashtag lines to highlight the module boundaries&#10;2) rename the sections according to future file names, e.g. Data -&gt; data&#10;   because the module is named data.py&#10;3) make comments fit 80-characters limit&#10;&#10;&#10;Code updates:&#10;1) create a block of code where the choice of architecture will be made&#10;2) make 2 get_unet_... functions: with NConv2D and with MaxPooling&#10;3) update docstrings for these 2 functions&#10;4) delete commented lines of code&#10;5) edit some minor comments within the 2 functions" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py">
@@ -205,15 +195,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Edward_Tyantov_edited.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="666" selection-start-line="666" selection-end-line="666" />
+        <state relative-caret-position="447">
+          <caret line="598" column="16" lean-forward="true" selection-start-line="485" selection-end-line="598" selection-end-column="16" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/urss_final_code_script.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="614" column="7" lean-forward="true" selection-start-line="614" selection-start-column="7" selection-end-line="614" selection-end-column="7" />
+        <state relative-caret-position="381">
+          <caret line="57" column="21" lean-forward="true" selection-start-line="57" selection-start-column="21" selection-end-line="57" selection-end-column="21" />
+          <folding>
+            <element signature="e#752#761#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
