@@ -1,77 +1,3 @@
-# ====================================================================================================================
-# Acknowledgements
-# ====================================================================================================================
-
-# This code is a concatenated, simplified, modified, and documented version of the code produced by Edward Tyantov
-# (later ET). The author's original code can be found on his GitHub page:
-# https://github.com/EdwardTyantov/ultrasound-nerve-segmentation
-
-# Concatenation:
-# Original code was split into separate files, which I could not manage to use as utility notebooks on Kaggle platform.
-# Due to the lack of GPU availability, I had to run the code on Kaggle GPUs. This is why I concatenated the code,
-# following the flow of implementation described in ET's README.md file.
-
-# Simplification:
-# I deleted the parts of code which were not used to get the final result as described in the README.md file.
-# I also tried to simplify the code where possible without reducing the quality.
-
-# Modification:
-# 1) Fixing the code, so it compiles on the Kaggle platform.
-# 2) Fixing the bugs occurring because of the updates in the libraries.
-# 3) Minor changes to the functions
-
-# Documentation:
-# I see this kernel as a working version of the code, made by other people. As a beginner in applied machine learning,
-# which I was at the beginning of my project, I found many details of the code by ET very confusing. This is why at
-# the very end of the project, I decided to document all the functions and objects in ET's code. Hopefully, this will
-# help furure beginners to understand this code quicker.
-
-
-# The code was published without a licence and publically available on the author's GitHub page without any licence.
-# It was initially based on the code by Marko Jocič (later MJ), which is confirmed by ET in the very end of
-# the README.md file. The code by MJ was published under the MIT licence. You can find this code on the author's
-# GitHub page: https://github.com/jocicmarko/ultrasound-nerve-segmentation/
-
-# This is why, following the guidance of the MIT licence, I assume that ET was also making the code available under
-# the MIT licence. And so do I, given the modifications made. Here you can see a copy of the MIT licence with all
-# three contributors to the code you can see below. Unfortunately, Kaggle only allows making the kernel public under
-# the Apache 2.0 license, which you will see when opening this kernel.
-
-# ====================================================================================================================
-# Licence
-# ====================================================================================================================
-
-# MIT License
-
-# Copyright (c) 2017 Marko Jocić
-# Copyright (c) 2018 Edward Tyantov
-# Copyright (c) 2019 George Batchkala
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-# documentation files (the "Software"), to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-# and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all copies or substantial portions of
-# the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-# THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
-# ====================================================================================================================
-# Future use:
-# ====================================================================================================================
-
-# If you find any mistakes or want to update the code to satisfy current kaggle environment, please submit your
-# changes to the file via GitHub request to my GitHub repository:
-# https://github.com/GeorgeBatch/ultrasound-nerve-segmentation
-
-# ====================================================================================================================
-
-
 # This Python 3 environment comes with many helpful analytics libraries installed
 # It is defined by the kaggle/python docker image: https://github.com/kaggle/docker-python
 # For example, here's several helpful packages to load in
@@ -85,6 +11,10 @@ _dir = os.path.abspath('')
 os.chdir(_dir)
 print(_dir)
 
+print(os.listdir(_dir))
+print(os.listdir("../input"))
+print(os.listdir("../input/ultrasound-nerve-segmentation"))
+
 # data
 data_path = os.path.join('/kaggle/input/ultrasound-nerve-segmentation', '')
 preprocess_path = os.path.join(_dir, 'np_data')
@@ -97,6 +27,7 @@ print(os.listdir(_dir))
 img_train_path = os.path.join(preprocess_path, 'imgs_train.npy')
 img_train_mask_path = os.path.join(preprocess_path, 'imgs_mask_train.npy')
 img_train_patients = os.path.join(preprocess_path, 'imgs_patient.npy')
+img_nerve_presence = os.path.join(preprocess_path, 'nerve_presence.npy')
 
 # test data
 img_test_path = os.path.join(preprocess_path, 'imgs_test.npy')
@@ -156,6 +87,15 @@ def load_patient_num():
     return np.load(img_train_patients)
 
 
+def load_nerve_presence():
+    """Load the array with binary nerve presence from a .npy file
+
+    :return: np.array with patient numbers
+    """
+    print('Loading nerve presence array from %s' % img_nerve_presence)
+    return np.load(img_nerve_presence)
+
+
 def get_patient_nums(string):
     """Create a tuple (patient, photo) from image-file name patient_photo.tif
 
@@ -168,6 +108,17 @@ def get_patient_nums(string):
     patient, photo = string.split('_')
     photo = photo.split('.')[0]
     return int(patient), int(photo)
+
+
+def get_nerve_presence(mask_array):
+    """Create an array specifying nerve presence on each of the masks in the mask_array
+
+    :param mask_array: 4D tensor of a shape (samples, rows, cols, channels=1) with masks
+    :return:
+    """
+    print("type(mask_array):", type(mask_array))
+    print("mask_array.shape:", mask_array.shape)
+    return np.array([int(np.sum(mask_array[i, :, :, 0]) > 0) for i in range(mask_array.shape[0])])
 
 
 def create_train_data():
@@ -219,12 +170,12 @@ def create_train_data():
         i += 1
     print('Loading done.')
 
-    # saving patient numbers
+    # saving patient numbers, train images, train masks, nerve presence
     np.save(img_train_patients, img_patients)
-    # saving train images
     np.save(img_train_path, imgs)
-    # saving train masks
     np.save(img_train_mask_path, imgs_mask)
+    np.save(img_nerve_presence, get_nerve_presence(imgs_mask))
+
     print('Saving to .npy files done.')
 
 
@@ -311,7 +262,7 @@ def dice_coef_loss(mask_pred, mask_true):
 
 def np_dice_coef(mask_1, mask_2, smooth=1):
     """Compute the dice coefficient between two equal-sized masks.
-    
+
     Used for testing on artificially generated np.arrays
 
     Dice Coefficient: https://en.wikipedia.org/wiki/S%C3%B8rensen%E2%80%93Dice_coefficient
@@ -354,6 +305,10 @@ from keras.optimizers import Adam
 IMG_ROWS, IMG_COLS = 80, 112
 K.set_image_data_format('channels_last')  # (number of images, rows per image, cols per image, channels)
 
+
+# --------------------------------------------------------------------------------------------------------------------
+# Different blocks used for U-net
+# --------------------------------------------------------------------------------------------------------------------
 
 def inception_block(inputs, filters, split=False, activation='relu'):
     """Create an inception block with 2 options described in:
@@ -482,12 +437,16 @@ def NConv2D(filters, kernel_size, padding='same', strides=(1, 1)):
     return f
 
 
+# --------------------------------------------------------------------------------------------------------------------
+# Different U-net architectures
+# --------------------------------------------------------------------------------------------------------------------
+
+
 def get_unet_inception_2head(optimizer):
     """
     Creating and compiling the U-net
-
-    :param optimizer: specifies the optimiser for the u-net, e.g. Adam, RMSProp, etc.
-    :return: compiled u-net, Keras.Model object
+    :param optimizer: specifies the optimiser for u-net
+    :return: compiled u-net model
     """
 
     split = True
@@ -499,31 +458,36 @@ def get_unet_inception_2head(optimizer):
 
     inputs = Input((IMG_ROWS, IMG_COLS, 1), name='main_input')
     print("inputs:", inputs._keras_shape)
-
     conv1 = inception_block(inputs, 32, split=split, activation=act)
     print("conv1", conv1._keras_shape)
-    pool1 = NConv2D(32, kernel_size=(3, 3), strides=(2, 2))(conv1)
+    # conv1 = inception_block(conv1, 32, split=split, activation=act)
+
+    # pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+    pool1 = NConv2D(32, kernel_size=(3, 3), padding='same', strides=(2, 2))(conv1)
     print("pool1", pool1._keras_shape)
     pool1 = Dropout(0.5)(pool1)
     print("pool1", pool1._keras_shape)
 
     conv2 = inception_block(pool1, 64, split=split, activation=act)
     print("conv2", conv2._keras_shape)
-    pool2 = NConv2D(64, kernel_size=(3, 3), strides=(2, 2))(conv2)
+    # pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+    pool2 = NConv2D(64, kernel_size=(3, 3), padding='same', strides=(2, 2))(conv2)
     print("pool2", pool2._keras_shape)
     pool2 = Dropout(0.5)(pool2)
     print("pool2", pool2._keras_shape)
 
     conv3 = inception_block(pool2, 128, split=split, activation=act)
     print("conv3", conv3._keras_shape)
-    pool3 = NConv2D(128, kernel_size=(3, 3), strides=(2, 2))(conv3)
+    # pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+    pool3 = NConv2D(128, kernel_size=(3, 3), padding='same', strides=(2, 2))(conv3)
     print("pool3", pool3._keras_shape)
     pool3 = Dropout(0.5)(pool3)
     print("pool3", pool3._keras_shape)
 
     conv4 = inception_block(pool3, 256, split=split, activation=act)
     print("conv4", conv4._keras_shape)
-    pool4 = NConv2D(256, kernel_size=(3, 3), strides=(2, 2))(conv4)
+    # pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+    pool4 = NConv2D(256, kernel_size=(3, 3), padding='same', strides=(2, 2))(conv4)
     print("pool4", pool4._keras_shape)
     pool4 = Dropout(0.5)(pool4)
     print("pool4", pool4._keras_shape)
@@ -531,16 +495,15 @@ def get_unet_inception_2head(optimizer):
     #
     # bottom level of the U-net
     #
-
     conv5 = inception_block(pool4, 512, split=split, activation=act)
     print("conv5", conv5._keras_shape)
+    # conv5 = inception_block(conv5, 512, split=split, activation=act)
     conv5 = Dropout(0.5)(conv5)
     print("conv5", conv5._keras_shape)
 
     #
     # auxiliary head for predicting probability of nerve presence
     #
-
     pre = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid')(conv5)
     pre = Flatten()(pre)
     aux_out = Dense(1, activation='sigmoid', name='aux_output')(pre)
@@ -568,7 +531,7 @@ def get_unet_inception_2head(optimizer):
     after_conv2 = rblock(conv2, 1, 64)
     print("after_conv2", after_conv2._keras_shape)
     up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), after_conv2], axis=3)
-    conv8 = inception_block(up8, 64, split=split, activation=act)
+    conv8 = inception_block(up8, 64, split=split, activation=act)  # batch_mode=2
     print("conv8", conv8._keras_shape)
     conv8 = Dropout(0.5)(conv8)
     print("conv8", conv8._keras_shape)
@@ -576,8 +539,9 @@ def get_unet_inception_2head(optimizer):
     after_conv1 = rblock(conv1, 1, 32)
     print("after_conv1", after_conv1._keras_shape)
     up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), after_conv1], axis=3)
-    conv9 = inception_block(up9, 32, split=split, activation=act)
+    conv9 = inception_block(up9, 32, split=split, activation=act)  # batch_mode=2
     print("conv9", conv9._keras_shape)
+    # conv9 = inception_block(conv9, 32, split=split, activation=act) # batch_mode=2
     conv9 = Dropout(0.5)(conv9)
     print("conv9", conv9._keras_shape)
 
@@ -619,58 +583,31 @@ if __name__ == '__main__':
     print('layer num', len(model.layers))
 
 # ====================================================================================================================
-# utils  - needed for train
+# Train
 # ====================================================================================================================
 
-import pickle
-
-
-def load_pickle(file_path):
-    data = None
-    with open(file_path, "rb") as dumpFile:
-        data = pickle.load(dumpFile)
-    return data
-
-
-def save_pickle(file_path, data):
-    with open(file_path, "wb") as dumpFile:
-        pickle.dump(data, dumpFile, pickle.HIGHEST_PROTOCOL)
-
-
-def count_enum(words):
-    wdict = {}
-    get = wdict.get
-    for word in words:
-        wdict[word] = get(word, 0) + 1
-    return wdict
-
-
-# ====================================================================================================================
-# train
-# ====================================================================================================================
-
-# standard-module imports
-from optparse import OptionParser
-import cv2, os, shutil, random
+from skimage.transform import resize
 import numpy as np
+from keras.models import Model
+from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose, BatchNormalization
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras import backend as K
+
+# Kaggle does not allow too many output files, so prediction masks are not saved
+from skimage.io import imsave
 
 
-# # separate-module imports
-#
-# from u_model import get_unet, IMG_COLS as img_cols, IMG_ROWS as img_rows
-# from data import load_train_data, load_test_data, load_patient_num
-# from utils import save_pickle, load_pickle, count_enum
+# # TF dimension ordering in this code - use axis=3 in BatchNormalization()
+K.set_image_data_format('channels_last')
+
+img_rows = 80
+img_cols = 112
+
+smooth = 1.
+
 
 def preprocess(imgs, to_rows=None, to_cols=None):
-    """Resize all images in a 4D tensor of images of the shape (samples, rows, cols, channels).
-
-    :param imgs: a 4D tensor of images of the shape (samples, rows, cols, channels)
-    :param to_rows: new number of rows for images to be resized to
-    :param to_cols: new number of rows for images to be resized to
-    :return: a 4D tensor of images of the shape (samples, to_rows, to_cols, channels)
-    """
     if to_rows is None or to_cols is None:
         to_rows = img_rows
         to_cols = img_cols
@@ -682,331 +619,95 @@ def preprocess(imgs, to_rows=None, to_cols=None):
     return imgs_p
 
 
-def get_object_existence(mask_array):
-    """Create an array specifying nerve presence on each of the masks in the mask_array
+def train_and_predict():
+    print('-' * 30)
+    print('Loading and preprocessing train data...')
+    print('-' * 30)
+    imgs_train, imgs_mask_train = load_train_data()
+    imgs_present = load_nerve_presence()
 
-    :param mask_array: 4D tensor of a shape (samples, rows, cols, channels=1) with masks
-    :return:
-    """
-    print("type(mask_array):", type(mask_array))
-    print("mask_array.shape:", mask_array.shape)
-    return np.array([int(np.sum(mask_array[i, :, :, 0]) > 0) for i in range(mask_array.shape[0])])
+    imgs_train = preprocess(imgs_train)
+    imgs_mask_train = preprocess(imgs_mask_train)
 
+    imgs_train = imgs_train.astype('float32')
+    mean = np.mean(imgs_train)  # mean for data centering
+    std = np.std(imgs_train)  # std for data normalization
 
-def load_pretrained_model(model, pretrained_path):
-    # load pretrained model from a given path, if there is a pretrained model
-    if pretrained_path is not None:
-        if not os.path.exists(pretrained_path):
-            raise ValueError('No such pre-trained path exists')
-        model.load_weights(pretrained_path)
+    imgs_train -= mean
+    imgs_train /= std
 
+    imgs_mask_train = imgs_mask_train.astype('float32')
+    imgs_mask_train /= 255.  # scale masks to be in {0, 1} instead of {0, 255}
 
-class Learner:
-    """Perform training on the train data and predicting on the test data
+    print('-' * 30)
+    print('Creating and compiling model...')
+    print('-' * 30)
 
-    :ivar model_func: function which creates the network architecture and compiles the Model, e.g. get_unet
-    :ivar validation_split: train/validation split used for training
-    :ivar mean: mean of data np.array passed to the _init_mean_std(self, data) function
-    :ivar std: std of data np.array passed to the _init_mean_std(self, data) function
+    # load model - the Learning rate scheduler choice is most important here
+    optimizer = Adam(lr=0.0045)
+    model = get_unet(optimizer)
 
-    :ivar __iter_res_dir: iterative results directory
-    :ivar __iter_res_file: iterative results file in which we'll write the results: epochs and validation losses
-    """
+    model_checkpoint = ModelCheckpoint('weights.h5', monitor='val_loss', save_best_only=True)
+    early_stopping = EarlyStopping(patience=5, verbose=1)
 
-    # class variables
-    suffix = ''
-    res_dir = os.path.join(_dir, 'res' + suffix)
-    best_weight_path = os.path.join(res_dir, 'unet.hdf5')
-    test_mask_res = os.path.join(res_dir, 'imgs_mask_test.npy')
-    test_mask_exist_res = os.path.join(res_dir, 'imgs_mask_exist_test.npy')
-    meanstd_path = os.path.join(res_dir, 'meanstd.dump')
-    valid_data_path = os.path.join(res_dir, 'valid.npy')
-    tensorboard_dir = os.path.join(res_dir, 'tb')
+    print('-' * 30)
+    print('Fitting model...')
+    print('-' * 30)
+    model.fit(imgs_train, [imgs_mask_train, imgs_present],
+              batch_size=128, epochs=50,
+              verbose=1, shuffle=True,
+              validation_split=0.2,
+              callbacks=[model_checkpoint, early_stopping])
 
-    def __init__(self, model_func, validation_split):
-        self.model_func = model_func
-        self.validation_split = validation_split
-        self.__iter_res_dir = os.path.join(self.res_dir, 'res_iter')
-        self.__iter_res_file = os.path.join(self.__iter_res_dir, '{epoch:02d}-{val_loss:.4f}.unet.hdf5')
+    print('-' * 30)
+    print('Loading and preprocessing test data...')
+    print('-' * 30)
+    imgs_test = load_test_data()
+    imgs_id_test = load_test_ids()
+    imgs_test = preprocess(imgs_test)
 
-    def _dir_init(self):
-        # create results directory if it does not exist, if it does - deletes it with everything inside and creates again
+    imgs_test = imgs_test.astype('float32')
+    imgs_test -= mean
+    imgs_test /= std
 
-        if not os.path.exists(self.res_dir):
-            os.mkdir(self.res_dir)
-        # iter clean
-        if os.path.exists(self.__iter_res_dir):
-            shutil.rmtree(self.__iter_res_dir)
-        os.mkdir(self.__iter_res_dir)
+    print('-' * 30)
+    print('Loading saved weights...')
+    print('-' * 30)
+    model.load_weights('weights.h5')
 
-    def save_meanstd(self):
-        """Save mean and standard deviation"""
-        data = [self.mean, self.std]
-        save_pickle(self.meanstd_path, data)
+    print('-' * 30)
+    print('Predicting masks on test data...')
+    print('-' * 30)
 
-    @classmethod
-    def load_meanstd(cls):
-        """Load mean and standard deviation
+    imgs_mask_test = model.predict(imgs_test, verbose=1)
 
-        :return: tuple (mean, standard deviation)
-        """
-        print('Load meanstd from %s' % cls.meanstd_path)
-        mean, std = load_pickle(cls.meanstd_path)
-        return mean, std
-
-    @classmethod
-    def save_valid_idx(cls, idx):
-        save_pickle(cls.valid_data_path, idx)
-
-    @classmethod
-    def load_valid_idx(cls):
-        return load_pickle(cls.valid_data_path)
-
-    def _init_mean_std(self, data):
-        # calculate mean and standard deviation of the data, e.g. x_train, initialise mean and std instance variables
-        data = np.array(data, dtype=np.float32)
-        self.mean, self.std = np.mean(data), np.std(data)
-        self.save_meanstd()
-        return data
-
-    def standardise(self, array, to_float=False):
-        """Standardise the given array.
-
-        The output array will have mean zero and standard deviation 1.
-
-        :param array: an array to be standardised
-        :param to_float: boolean parameter of whether to convert the input array to float
-        :return: standardised version of the input array
-        """
-        if to_float:
-            array = np.array(array, dtype=np.float32)
-        if self.mean is None or self.std is None:
-            raise ValueError('No mean/std is initialised')
-
-        array -= self.mean
-        array /= self.std
-        return array
-
-    @classmethod
-    def norm_mask(cls, mask_array):
-        """Convert an array with values in {0, 255} into an array with values in {0, 1}
-
-        :param mask_array: Input mask array of the shape (samples, rows, cols, channels). Values in {0, 255}
-        :return: the same array with values in {0, 1} - everything is divided by 255
-        """
-        mask_array = np.array(mask_array, dtype=np.float32)
-        mask_array /= 255.0
-        return mask_array
-
-    @classmethod
-    def shuffle_train(cls, data, mask):
-        """Create a random permutation of samples
-
-        :param data: 4D data tensor of train images, shape (samples, rows, cols, channels)
-        :param mask: 4D data tensor of train masks shape (samples, rows, cols, channels)
-        :return: a tuple (data, mask) with samples both data and mask tensors permuted
-        """
-        perm = np.random.permutation(len(data))
-        data = data[perm]
-        mask = mask[perm]
-        return data, mask
-
-    @classmethod
-    def split_train_and_valid_by_patient(cls, data, mask, validation_split, shuffle=False):
-        """Create a split of training data into training and validation data by patient
-
-        :param data: 4D data tensor of train images, shape (samples, rows, cols, channels)
-        :param mask: 4D data tensor of train masks shape (samples, rows, cols, channels)
-        :param validation_split: validation split, e.g. validation_split=0.2 will put 20% of the patients into validation set
-        :param shuffle: boolean variable, whether to shuffle the patient ids before choosing ids for validation
-        :return: a tuple of tuples (x_train, y_train), (x_valid, y_valid), where "y" stands for masks
-        """
-        print('Shuffle & split...')
-        patient_nums = load_patient_num()
-        patient_dict = count_enum(patient_nums)
-        pnum = len(patient_dict)
-        val_num = int(pnum * validation_split)
-        patients = patient_dict.keys()
-        if shuffle:
-            random.shuffle(patients)
-        val_p, train_p = patients[:val_num], patients[val_num:]
-        train_indexes = [i for i, c in enumerate(patient_nums) if c in set(train_p)]
-        val_indexes = [i for i, c in enumerate(patient_nums) if c in set(val_p)]
-        x_train, y_train = data[train_indexes], mask[train_indexes]
-        x_valid, y_valid = data[val_indexes], mask[val_indexes]
-        cls.save_valid_idx(val_indexes)
-        print('val patients:', len(x_valid), val_p)
-        print('train patients:', len(x_train), train_p)
-        return (x_train, y_train), (x_valid, y_valid)
-
-    @classmethod
-    def split_train_and_valid(cls, data, mask, validation_split, shuffle=False):
-        """Create a split of training data into training and validation data
-
-        :param data: 4D data tensor of train images, shape (samples, rows, cols, channels)
-        :param mask: 4D data tensor of train masks shape (samples, rows, cols, channels)
-        :param validation_split: validation split, e.g. validation_split=0.2 will put 20% of the images into validation set
-        :param shuffle: boolean variable, whether to shuffle the images before choosing some of them for validation
-        :return: a tuple of tuples (x_train, y_train), (x_valid, y_valid), where "y" stands for masks
-        """
-        print('Shuffle & split...')
-        if shuffle:
-            data, mask = cls.shuffle_train(data, mask)
-        split_at = int(len(data) * (1. - validation_split))
-        x_train, x_valid = data[0:split_at, :, :, :], data[split_at:, :, :, :]
-        y_train, y_valid = mask[0:split_at, :, :, :], mask[split_at:, :, :, :]
-        cls.save_valid_idx(range(len(data))[split_at:])
-        print('type(x_train): ', type(x_train), 'type(x_valid): ', type(x_valid))
-        print('type(y_train): ', type(y_train), 'type(y_valid): ', type(y_valid))
-        return (x_train, y_train), (x_valid, y_valid)
-
-    def test(self, model, batch_size=256):
-        """Load, prepare and predict from the test data
-
-        :param model: compiled Model, e.g u-net to use
-        :param batch_size: predict images in batches of size=batch_size
-        """
-        print('Loading and pre-processing test data...')
-        imgs_test = load_test_data()
-        imgs_test = preprocess(imgs_test)
-        imgs_test = self.standardise(imgs_test, to_float=True)
-
-        print('Loading best saved weights...')
-        model.load_weights(self.best_weight_path)
-        print('Predicting masks on test data and saving...')
-        imgs_mask_test = model.predict(imgs_test, batch_size=batch_size, verbose=1)
-
-        np.save(self.test_mask_res, imgs_mask_test[0])
-        np.save(self.test_mask_exist_res, imgs_mask_test[1])
-
-    def fit(self, x_train, y_train, x_valid, y_valid, pretrained_path):
-        """Fit the model to the training data.
-        
-        For each predictor, there are 2 responses. The second response is binary nerve presence, created within the function.
-
-        :param x_train: 4D tensor of training images
-        :param y_train: 4D tensor of training masks
-        :param x_valid: 4D tensor of validation images
-        :param y_valid: 4D tensor of validation masks
-        :param pretrained_path: directory with 
-        :return: fitted model
-        """
-        print('Creating and compiling and fitting model...')
-
-        # y_train_2 and y_valid_2 are training and validation response arrays of nerve presence - needed for 2nd output
-        # shape (samples_train, ) and (samples_valid, ) respectively
-        print("type(y_train):", type(y_train))
-        y_train_2 = get_object_existence(y_train)
-        y_valid_2 = get_object_existence(y_valid)
-
-        # create and compile the model - the Learning rate scheduler choice is very important here
-        optimizer = Adam(lr=0.0045)
-        model = self.model_func(optimizer)
-
-        # checkpoints
-        model_checkpoint = ModelCheckpoint(self.__iter_res_file, monitor='val_loss')
-        model_save_best = ModelCheckpoint(self.best_weight_path, monitor='val_loss', save_best_only=True)
-        early_s = EarlyStopping(monitor='val_loss', patience=5, verbose=1)
-
-        # load pretrained model from a given path, if there is a pretrained model
-        load_pretrained_model(model, pretrained_path)
-        model.fit(
-            x_train, [y_train, y_train_2],
-            validation_data=(x_valid, [y_valid, y_valid_2]),
-            batch_size=128, epochs=50,
-            verbose=1, shuffle=True,
-            callbacks=[model_save_best, model_checkpoint, early_s]
-        )
-        return model
-
-    def train_and_predict(self, pretrained_path=None, split_random=True):
-        """Prepare the training data, fit the model on the train data, predict from the test data and save the results.
-
-        :param pretrained_path: the path to pretrained model, in case there is one
-        :param split_random: boolean, whether to split randomly or by patient
-        """
-        self._dir_init()
-        
-        print('Loading and preprocessing and standardising train data...')
-        imgs_train, imgs_mask_train = load_train_data()
-        imgs_train = preprocess(imgs_train)
-        imgs_mask_train = preprocess(imgs_mask_train)
-        imgs_mask_train = self.norm_mask(imgs_mask_train)
-        
-        # splitting the training data randomly or by patient
-        split_func = split_random and self.split_train_and_valid or self.split_train_and_valid_by_patient
-        (x_train, y_train), (x_valid, y_valid) = split_func(imgs_train, imgs_mask_train,
-                                                            validation_split=self.validation_split)
-        
-        # Important: validation data should be standardised using train data's mean and variance, otherwise we use some 
-        # of the information about validation set during training
-        self._init_mean_std(x_train)
-        x_train = self.standardise(x_train, True)
-        x_valid = self.standardise(x_valid, True)
-        
-        # fitting the model
-        model = self.fit(x_train, y_train, x_valid, y_valid, pretrained_path)
-        
-        # predicting on test data and saving the result
-        self.test(model)
+    np.save('imgs_mask_test.npy', imgs_mask_test[0])
+    np.save('imgs_mask_test_present.npy', imgs_mask_test[1])
 
 
 # --------------------------------------------------------------------------------------------------------------------
+
 if __name__ == '__main__':
-    parser = OptionParser()
-    parser.add_option("-s", "--split_random", action='store', type='int', dest='split_random', default=1)
-    parser.add_option("-m", "--model_name", action='store', type='str', dest='model_name', default='u_model')
-    #
-    options, _ = parser.parse_args()
-    split_random = options.split_random
-    model_name = options.model_name
-    if model_name is None:
-        raise ValueError('model_name is not defined')
-    #
-    model_func = get_unet
-    #
-    lr = Learner(model_func, validation_split=0.2)
-    lr.train_and_predict(split_random=split_random)
-    print('Results in ', lr.res_dir)
+    train_and_predict()
 
 
 # ====================================================================================================================
-# submission
+# Submission
 # ====================================================================================================================
-
-# standard-module imports
-from skimage.transform import resize
-
-# # separate-module imports
-# from data import load_test_data
-
 
 def prep(img):
-    """Prepare the image for to be used in a submission
-
-    :param img: 2D image
-    :return: resized version of an image
-    """
     img = img.astype('float32')
-    img = resize(img, (image_rows, image_cols), preserve_range=True)
     img = (img > 0.5).astype(np.uint8)  # threshold
+    img = resize(img, (image_rows, image_cols), preserve_range=True)
     return img
 
 
 def run_length_enc(label):
-    """Create a run-length-encoding of an image
-
-    :param label: image to be encoded
-    :return: string with run-length-encoding of an image
-    """
     from itertools import chain
     x = label.transpose().flatten()
     y = np.where(x > 0)[0]
-
-    # consider empty all masks with less than 10 pixels being greater than 0
-    if len(y) < 10:
+    if len(y) < 10:  # consider as empty
         return ''
-
     z = np.where(np.diff(y) > 1)[0]
     start = np.insert(y[z + 1], 0, y[0])
     end = np.append(y[z], y[-1])
@@ -1017,18 +718,14 @@ def run_length_enc(label):
 
 
 def submission():
-    """Create a submission .csv file.
+    # Uncomment the next line if the coede is separated in different files
+    # from data import load_test_data
 
-    The file will have 2 cols: img, pixels.
-        The image column consists of the ids of test images.
-        The pixels column consists of the run-length-encodings of the corresponding images.
-    """
     imgs_id_test = load_test_ids()
-
-    print('Loading test_mask_res from %s' % Learner.test_mask_res)
-    imgs_test = np.load(Learner.test_mask_res)
-    print('Loading imgs_exist_test from %s' % Learner.test_mask_exist_res)
-    imgs_exist_test = np.load(Learner.test_mask_exist_res)
+    print('Loading imgs_test from imgs_mask_test.npy')
+    imgs_test = np.load('imgs_mask_test.npy')
+    print('Loading imgs_exist_test from imgs_mask_test_present.npy')
+    imgs_exist_test = np.load('imgs_mask_test_present.npy')
 
     argsort = np.argsort(imgs_id_test)
     imgs_id_test = imgs_id_test[argsort]
@@ -1037,7 +734,7 @@ def submission():
 
     total = imgs_test.shape[0]
     ids = []
-    rles = []  # run-length-encodings
+    rles = []
     for i in range(total):
         img = imgs_test[i, :, :, 0]
         img_exist = imgs_exist_test[i]
@@ -1045,7 +742,7 @@ def submission():
 
         # new probability of nerve presence
         new_prob = (img_exist + min(1, np.sum(img) / 10000.0) * 5 / 3) / 2
-        # setting mask to array of zeros if new probability of nerve presence < 0.5
+        # setting mask to array of zeros if new probabiliry of nerve presence < 0.5
         if np.sum(img) > 0 and new_prob < 0.5:
             img = np.zeros((image_rows, image_cols))
 
@@ -1068,5 +765,8 @@ def submission():
 
 
 # --------------------------------------------------------------------------------------------------------------------
+
+
 if __name__ == '__main__':
     submission()
+

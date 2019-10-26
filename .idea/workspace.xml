@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Edward_Tyantow_edited.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE_change.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/acknowledgements/Marko Jocic/https-::github.com:jocicmark.textClipping" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/urss_final_code_script.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Edward_Tyantov_edited.py" beforeDir="false" afterPath="$PROJECT_DIR$/Edward_Tyantov_edited.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,23 +13,53 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Edward_Tyantov_edited.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="51" column="110" lean-forward="true" selection-start-line="51" selection-start-column="110" selection-end-line="51" selection-end-column="110" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Edward_Tyantov_edited.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="262">
+                  <caret line="619" lean-forward="true" selection-start-line="619" selection-end-line="619" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/urss_final_code_script.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="239">
+                  <caret line="596" column="80" selection-start-line="596" selection-start-column="80" selection-end-line="596" selection-end-column="80" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>get_object_existence</find>
       <find>_pretrained_model_load</find>
+      <find>np.mean</find>
+      <find>self.mean</find>
+      <find>splitted</find>
     </findStrings>
+    <replaceStrings>
+      <replace>split</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -40,20 +68,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Edward_Tyantow_edited.py" />
+        <option value="$USER_HOME$/Downloads/urss-all-code.py" />
         <option value="$PROJECT_DIR$/Edward_Tyantov_edited.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectConfigurationFiles">
-    <option name="files">
-      <list>
-        <option value="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-        <option value="$PROJECT_DIR$/.idea/ultrasound-nerve-segmentation.iml" />
-        <option value="$PROJECT_DIR$/.idea/misc.xml" />
-        <option value="$PROJECT_DIR$/.idea/modules.xml" />
-        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" />
-        <option value="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" />
+        <option value="$PROJECT_DIR$/urss_final_code_script.py" />
       </list>
     </option>
   </component>
@@ -101,8 +118,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18526466" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18526466" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32983682" />
@@ -111,9 +129,9 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.32983682" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32983682" />
       <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32983682" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="11" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -126,7 +144,10 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Create functions from static methods get_object_existance() and __pretrain_model_load(). They were inside the class, but did not need an instance of the class.&#10;&#10;Improve spelling.&#10;&#10;Improve spacing." />
     <MESSAGE value="Correct the author's name.&#10;&#10;Add acknowledgements, license, and future use notes." />
-    <option name="LAST_COMMIT_MESSAGE" value="Correct the author's name.&#10;&#10;Add acknowledgements, license, and future use notes." />
+    <MESSAGE value="Change the LICENCE to include all names of the contributors." />
+    <MESSAGE value="Add the link to MJ's github" />
+    <MESSAGE value=".idea configurations" />
+    <option name="LAST_COMMIT_MESSAGE" value=".idea configurations" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py">
@@ -136,10 +157,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/LICENSE.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor />
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/acknowledgements/Marko Jocic/jocicmarko:ultrasound-nerve-segmentation- Deep Learning Tutorial for Kaggle Ultrasound Nerve Segmentation competition, using Keras.webloc">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/urss-all-code.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="570">
+          <caret line="38" column="32" selection-start-line="38" selection-start-column="32" selection-end-line="38" selection-end-column="32" />
+          <folding>
+            <element signature="e#232#269#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/urss_final_code_script.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="239">
+          <caret line="596" column="80" selection-start-line="596" selection-start-column="80" selection-end-line="596" selection-end-column="80" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Edward_Tyantov_edited.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="51" column="110" lean-forward="true" selection-start-line="51" selection-start-column="110" selection-end-line="51" selection-end-column="110" />
+        <state relative-caret-position="262">
+          <caret line="619" lean-forward="true" selection-start-line="619" selection-end-line="619" />
         </state>
       </provider>
     </entry>
