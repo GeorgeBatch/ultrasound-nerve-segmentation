@@ -1,7 +1,7 @@
 MIT License
 
-Copyright (c) 2017 Marko Jocić
-Copyright (c) 2018 Edward Tyantov
+Copyright (c) 2017 Marko Jocić <br>
+Copyright (c) 2018 Edward Tyantov <br>
 Copyright (c) 2019 George Batchkala
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
