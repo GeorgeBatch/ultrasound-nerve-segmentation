@@ -352,6 +352,18 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
     Create an inception block described in v1, sections 'a' (for naive version), or 'b' (with dimension reduction)
+    Each version has 4 verticals in their structure. See the link above.
+
+    For all versions, verticals 1 and 2 of the block start with 2D convolution, which:
+        reduces the number of input filters to next convolutions (to make computation cheaper)
+        uses (1, 1) kernels
+        is NOT normalized
+        is followed by specified activation
+    For all versions, verticals 1, 2, 3:
+        the final convolution layer is not normalised and not activated since it will be dene after concatenation
+    Vertical 4 is just a Conv2D. Its gets normalized and activated after being concatenated with
+        outputs of other verticals.
+    The concatenated output of the verticals is normalised and then activated with a given activation
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
@@ -364,17 +376,20 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
     # vertical 1
+    if version == 'a':
+        c1 = Conv2D(filters=filters // 8, kernel_size=(5, 5), padding='same', kernel_initializer='he_normal')(c1_1)
     if version == 'b':
-        c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
-        c1_1 = actv()(c1_1)
-    c1 = Conv2D(filters=filters // 8, kernel_size=(5, 5), padding='same', kernel_initializer='he_normal')(c1_1)
+        c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same',
+                      activation=activation, kernel_initializer='he_normal')(inputs)
+        c1 = Conv2D(filters=filters // 8, kernel_size=(5, 5), padding='same', kernel_initializer='he_normal')(c1_1)
 
     # vertical 2
+    if version == 'a':
+        c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), padding='same', kernel_initializer='he_normal')(c2_1)
     if version == 'b':
-        c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1),
-                      padding='same', kernel_initializer='he_normal')(inputs)
-        c2_1 = actv()(c2_1)
-    c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), padding='same', kernel_initializer='he_normal')(c2_1)
+        c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), padding='same',
+                      activation=activation, kernel_initializer='he_normal')(inputs)
+        c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), padding='same', kernel_initializer='he_normal')(c2_1)
 
     # vertical 3
     p3_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
@@ -383,7 +398,7 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
     else:
         c3 = p3_1
         
-    # vertical 1
+    # vertical 4
     c4_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
     c4 = c4_1
 
@@ -399,6 +414,19 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
     Create an inception block described in v2, sections 'a', 'b', or 'c'
+    Each version has 4 verticals in their structure. See the link above.
+
+    For all versions, verticals 1 and 2 of the block start with 2D convolution, which:
+        reduces the number of input filters to next convolutions (to make computation cheaper)
+        uses (1, 1) kernels
+        is NOT normalized
+        is followed by specified activation
+    For all versions, verticals 1, 2, 3:
+        the middle convolutions use NConv2D with given activation, see its docstring
+        the final convolution layer is not normalised and not activated since it will be dene after concatenation
+    Vertical 4 is just a Conv2D. Its gets normalized and activated after being concatenated with
+        outputs of other verticals.
+    The concatenated output of the verticals is normalised and then activated with a given activation
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
@@ -410,10 +438,9 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
     assert version in ['a', 'b', 'c']
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
-
     # vertical 1
-    c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
-    c1_1 = actv()(c1_1)
+    c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same',
+                  activation=activation, kernel_initializer='he_normal')(inputs)
     if version == 'a':
         c1_2 = NConv2D(filters=filters // 8, kernel_size=3, padding='same',
                        activation=activation, kernel_initializer='he_normal')(c1_1)
@@ -421,20 +448,23 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
     elif version == 'b':
         c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 3), padding='same',
                        activation=activation, kernel_initializer='he_normal')(c1_1)
-        c1_3 = Conv2D(filters=filters // 8, kernel_size=(3, 1), padding='same', kernel_initializer='he_normal')(c1_2)
-        c1_4 = Conv2D(filters=filters // 8, kernel_size=(1, 3), padding='same', kernel_initializer='he_normal')(c1_3)
+        c1_3 = NConv2D(filters=filters // 8, kernel_size=(3, 1), padding='same',
+                       activation=activation, kernel_initializer='he_normal')(c1_2)
+        c1_4 = NConv2D(filters=filters // 8, kernel_size=(1, 3), padding='same',
+                       activation=activation, kernel_initializer='he_normal')(c1_3)
         c1 = Conv2D(filters=filters // 8, kernel_size=(3, 1), padding='same', kernel_initializer='he_normal')(c1_4)
     else:
         c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 3), padding='same',
                        activation=activation, kernel_initializer='he_normal')(c1_1)
-        c1_3 = Conv2D(filters=filters // 8, kernel_size=3, padding='same', kernel_initializer='he_normal')(c1_2)
+        c1_3 = NConv2D(filters=filters // 8, kernel_size=3, padding='same',
+                       activation=activation, kernel_initializer='he_normal')(c1_2)
         c1_41 = Conv2D(filters=filters // 8, kernel_size=(1, 3), padding='same', kernel_initializer='he_normal')(c1_3)
         c1_42 = Conv2D(filters=filters // 8, kernel_size=(3, 1), padding='same', kernel_initializer='he_normal')(c1_3)
         c1 = concatenate([c1_41, c1_42], axis=3)
 
     # vertical 2
-    c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
-    c2_1 = actv()(c2_1)
+    c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), padding='same',
+                  activation=activation, kernel_initializer='he_normal')(inputs)
     if version == 'a':
         c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), padding='same', kernel_initializer='he_normal')(c2_1)
     elif version == 'b':
