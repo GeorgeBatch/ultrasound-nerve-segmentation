@@ -320,88 +320,138 @@ from keras.layers.advanced_activations import ELU, LeakyReLU
 # Different blocks used for U-net
 # ======================================================================================================================
 
-def inception_block_v1b(inputs, filters, activation='relu'):
-    """Create an inception block
+def NConv2D(filters, kernel_size, strides=1, padding='same', activation='relu', kernel_initializer='glorot_uniform'):
+    """Create a (Normalized Conv2D followed by a chosen activation) function
+    Conv2D -> BatchNormalization -> activation()
 
-    Create an inception block described in v1, section b of:
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the
+    convolution)
+    :param kernel_size: An integer or tuple/list of 2 integers, specifying the height and width of the 2D convolution
+                        window. Can be a single integer to specify the same value for all spatial dimensions.
+    :param strides: An integer or tuple/list of 2 integers, specifying the strides of the convolution along the height
+                    and width. Can be a single integer to specify the same value for all spatial dimensions.
+                    Specifying any stride value != 1 is incompatible with specifying any dilation_rate value != 1.
+    :param padding: one of "valid" or "same" (case-insensitive)
+    :param activation: specify the activation to be performed after BatchNormalization
+    :param kernel_initializer: Initializer for the kernel weights matrix (see initializers in keras documentation)
+
+    :return: 2D Convolution function, followed by BatchNormalization across filters and ELU activation
+    """
+    actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
+
+    def f(_input):
+        conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=strides,
+                      padding=padding, kernel_initializer=kernel_initializer)(_input)
+        norm = BatchNormalization(axis=3)(conv)
+        return actv()(norm)
+
+    return f
+
+
+def inception_block_v1(inputs, filters, version='b', activation='relu'):
+    """Create a version of v1 inception block described in:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
+    Create an inception block described in v1, sections 'a' (for naive version), or 'b' (with dimension reduction)
+
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
-    :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters).
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
+    :param version: version of inception block, one of 'a', 'b' (case sensitive)
     :param activation: activation function to use everywhere in the block
     :return: output of the inception block, given inputs
     """
     assert filters % 16 == 0
+    assert version in ['a', 'b']
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
     # vertical 1
-    c1_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    if version == 'b':
+        c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+        c1_1 = actv()(c1_1)
+    c1 = Conv2D(filters=filters // 8, kernel_size=(5, 5), kernel_initializer='he_normal', padding='same')(c1_1)
 
     # vertical 2
-    c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
-    # no batch norm
-    c2_1 = actv()(c2_1)
-    c2_3 = Conv2D(filters=filters // 2, kernel_size=(3, 3), kernel_initializer='he_normal', padding='same')(c2_1)
+    if version == 'b':
+        c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), kernel_initializer='he_normal',
+                      padding='same')(inputs)
+        c2_1 = actv()(c2_1)
+    c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), kernel_initializer='he_normal', padding='same')(c2_1)
 
     # vertical 3
-    c3_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
-    # no batch norm
-    c3_1 = actv()(c3_1)
-    c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 5), kernel_initializer='he_normal', padding='same')(c3_1)
-
-    # vertical 4
-    p4_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
-    c4_2 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p4_1)
+    p3_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
+    if version == 'b':
+        c3 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p3_1)
+    else:
+        c3 = p3_1
+        
+    # vertical 1
+    c4_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    c4 = c4_1
 
     # concatenating verticals together
-    result = concatenate([c1_1, c2_3, c3_3, c4_2], axis=3)
+    result = concatenate([c1, c2, c3, c4], axis=3)
     result = BatchNormalization(axis=3)(result)
     result = actv()(result)
-
     return result
 
 
-def inception_block_v2(inputs, filters, activation='relu'):
-    """Create an inception block
-
-    Create an inception block described in v2 of:
+def inception_block_v2(inputs, filters, version='b', activation='relu'):
+    """Create a version of v1 inception block described in:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
+    Create an inception block described in v2, sections 'a', 'b', or 'c'
+
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
-    :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters).
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
+    :param version: version of inception block, one of 'a', 'b', 'c' (case sensitive)
     :param activation: activation function to use everywhere in the block
     :return: output of the inception block, given inputs
     """
     assert filters % 16 == 0
+    assert version in ['a', 'b', 'c']
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
+
     # vertical 1
-    c1_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    c1_1 = actv()(c1_1)
+    if version == 'a':
+        c1_2 = NConv2D(filters=filters // 8, kernel_size=3, activation=activation, kernel_initializer='he_normal')(c1_1)
+        c1 = Conv2D(filters=filters // 8, kernel_size=3, activation=activation, kernel_initializer='he_normal')(c1_2)
+    elif version == 'b':
+        c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 3), activation=activation, kernel_initializer='he_normal')(c1_1)
+        c1_3 = Conv2D(filters=filters // 8, kernel_size=(3, 1), activation=activation, kernel_initializer='he_normal')(c1_2)
+        c1_4 = Conv2D(filters=filters // 8, kernel_size=(1, 3), activation=activation, kernel_initializer='he_normal')(c1_3)
+        c1 = Conv2D(filters=filters // 8, kernel_size=(3, 1), activation=activation, kernel_initializer='he_normal')(c1_4)
+    else:
+        c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 3), activation=activation, kernel_initializer='he_normal')(c1_1)
+        c1_3 = Conv2D(filters=filters // 8, kernel_size=3, activation=activation, kernel_initializer='he_normal')(c1_2)
+        c1_41 = Conv2D(filters=filters // 8, kernel_size=(1, 3), activation=activation, kernel_initializer='he_normal')(c1_3)
+        c1_42 = Conv2D(filters=filters // 8, kernel_size=(3, 1), activation=activation, kernel_initializer='he_normal')(c1_3)
+        c1 = concatenate([c1_41, c1_42], axis=3)
 
     # vertical 2
     c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
-    # no batch norm
     c2_1 = actv()(c2_1)
-    c2_2 = Conv2D(filters=filters // 2, kernel_size=(1, 3), kernel_initializer='he_normal', padding='same')(c2_1)
-    c2_2 = BatchNormalization(axis=3)(c2_2)
-    c2_2 = actv()(c2_2)
-    c2_3 = Conv2D(filters=filters // 2, kernel_size=(3, 1), kernel_initializer='he_normal', padding='same')(c2_2)
+    if version == 'a':
+        c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), kernel_initializer='he_normal', padding='same')(c2_1)
+    elif version == 'b':
+        c2_2 = NConv2D(filters=filters // 2, kernel_size=(1, 3), kernel_initializer='he_normal', padding='same')(c2_1)
+        c2 = Conv2D(filters=filters // 2, kernel_size=(3, 1), kernel_initializer='he_normal', padding='same')(c2_2)
+    else:
+        c2_21 = NConv2D(filters=filters // 2, kernel_size=(1, 3), kernel_initializer='he_normal', padding='same')(c2_1)
+        c2_22 = NConv2D(filters=filters // 2, kernel_size=(3, 1), kernel_initializer='he_normal', padding='same')(c2_1)
+        c2 = concatenate([c2_21, c2_22], axis=3)
 
     # vertical 3
-    c3_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
-    # no batch norm
-    c3_1 = actv()(c3_1)
-    c3_2 = Conv2D(filters=filters // 8, kernel_size=(1, 5), kernel_initializer='he_normal', padding='same')(c3_1)
-    c3_2 = BatchNormalization(axis=3)(c3_2)
-    c3_2 = actv()(c3_2)
-    c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 1), kernel_initializer='he_normal', padding='same')(c3_2)
+    p3_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
+    c3 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p3_1)
 
     # vertical 4
-    p4_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
-    c4_2 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p4_1)
+    c4 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
 
     # concatenating verticals together
-    result = concatenate([c1_1, c2_3, c3_3, c4_2], axis=3)
+    result = concatenate([c1, c2, c3, c4], axis=3)
     result = BatchNormalization(axis=3)(result)
     result = actv()(result)
 
@@ -442,33 +492,6 @@ def rblock(inputs, kernel_size, filters, scale=0.1):
     residual = Lambda(lambda x: x * scale)(residual)
     res = _shortcut(inputs, residual)
     return ELU()(res)
-
-
-def NConv2D(filters, kernel_size, padding='same', strides=(1, 1), activation='relu'):
-    """Create a (Normalized Conv2D followed by ELU activation) function
-    Conv2D -> BatchNormalization -> activation()
-
-    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the
-    convolution)
-    :param kernel_size: An integer or tuple/list of 2 integers, specifying the height and width of the 2D convolution
-                        window. Can be a single integer to specify the same value for all spatial dimensions.
-    :param padding: one of "valid" or "same" (case-insensitive)
-    :param strides: An integer or tuple/list of 2 integers, specifying the strides of the convolution along the height
-                    and width. Can be a single integer to specify the same value for all spatial dimensions.
-                    Specifying any stride value != 1 is incompatible with specifying any dilation_rate value != 1.
-    :param activation: specify the activation to be performed after BatchNormali
-
-    :return: 2D Convolution function, followed by BatchNormalization across filters and ELU activation
-    """
-    actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
-
-    def f(_input):
-        conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=strides,
-                      padding=padding)(_input)
-        norm = BatchNormalization(axis=3)(conv)
-        return actv()(norm)
-
-    return f
 
 
 ########################################################################################################################
