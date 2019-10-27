@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/working/urss_final_code_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/urss_final_code_script.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,17 +14,21 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/working/Edward_Tyantov_edited.py">
+        <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-14759">
-              <caret line="42" lean-forward="true" selection-end-line="1074" />
+            <state relative-caret-position="254">
+              <caret line="322" column="80" selection-start-line="322" selection-start-column="80" selection-end-line="322" selection-end-column="98" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/working/Edward_Tyantov_edited.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="438">
+              <caret line="410" column="5" lean-forward="true" selection-start-line="410" selection-start-column="5" selection-end-line="410" selection-end-column="5" />
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
@@ -37,15 +42,10 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>image_rows = 420</find>
-      <find>IMG_ROWS, IMG_COLS = 80, 112</find>
-      <find>80</find>
-      <find>img_rows</find>
       <find>smooth = 1.</find>
       <find>img_cols</find>
       <find>os</find>
       <find>prepro</find>
-      <find>K.</find>
       <find>padding</find>
       <find>split=</find>
       <find>split</find>
@@ -67,10 +67,18 @@
       <find>lambda</find>
       <find>actv</find>
       <find>Jocič</find>
+      <find>K.</find>
+      <find>one of</find>
+      <find>&quot;</find>
+      <find>3_</find>
+      <find>c1</find>
     </findStrings>
     <replaceStrings>
       <replace>split</replace>
       <replace>Jocić</replace>
+      <replace>'</replace>
+      <replace>1_</replace>
+      <replace>c4</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -84,6 +92,7 @@
         <option value="$PROJECT_DIR$/Edward_Tyantov_edited.py" />
         <option value="$PROJECT_DIR$/urss_final_code_script.py" />
         <option value="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" />
+        <option value="$PROJECT_DIR$/working/urss_final_code_script.py" />
       </list>
     </option>
   </component>
@@ -138,7 +147,7 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1874106" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1874106" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32983682" />
@@ -147,7 +156,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" weight="0.32983682" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" visible="true" weight="0.32983682" />
       <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32983682" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" weight="0.32983682" />
@@ -170,7 +179,9 @@
     <MESSAGE value="Style updates:&#10;1) use hashtag lines to highlight the module boundaries&#10;2) rename the sections according to future file names, e.g. Data -&gt; data&#10;   because the module is named data.py&#10;3) make comments fit 80-characters limit&#10;&#10;&#10;Code updates:&#10;1) create a block of code where the choice of architecture will be made&#10;2) make 2 get_unet_... functions: with NConv2D and with MaxPooling&#10;3) update docstrings for these 2 functions&#10;4) delete commented lines of code&#10;5) edit some minor comments within the 2 functions" />
     <MESSAGE value="Style updates:&#10;1) add set up stage to data module&#10;2) add more separators, e.g. # ------" />
     <MESSAGE value="Code updates:&#10;1) split u_model into u_model_blocks and u_model&#10;2) split and duplicate imports&#10;3) in u_model: import u_model_blocks&#10;&#10;4) split inception_block() into inception_block_v1b() and&#10;   inception_block_v2()&#10;5) remove split argument everywhere for the inception_block() &#10;&#10;6) add configuration module, where get_unet and inception_block&#10;   are specified" />
-    <option name="LAST_COMMIT_MESSAGE" value="Code updates:&#10;1) split u_model into u_model_blocks and u_model&#10;2) split and duplicate imports&#10;3) in u_model: import u_model_blocks&#10;&#10;4) split inception_block() into inception_block_v1b() and&#10;   inception_block_v2()&#10;5) remove split argument everywhere for the inception_block() &#10;&#10;6) add configuration module, where get_unet and inception_block&#10;   are specified" />
+    <MESSAGE value="update a comment:&#10;# tensorflow backend -&gt; # using tensorflow backend" />
+    <MESSAGE value="Code updates:&#10;1) add kernel_initializer argument to NConv2D() so it can be used in&#10;   inception blocks&#10;2) Delete old versions of inception blocks&#10;3) Write up 2 new functions:&#10;   inception_block_v1() with new parameter version in ['a', 'b'], and&#10;   inception_block_v2() with new parameter version in ['a', 'b', 'c']&#10;   as in https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202" />
+    <option name="LAST_COMMIT_MESSAGE" value="Code updates:&#10;1) add kernel_initializer argument to NConv2D() so it can be used in&#10;   inception blocks&#10;2) Delete old versions of inception blocks&#10;3) Write up 2 new functions:&#10;   inception_block_v1() with new parameter version in ['a', 'b'], and&#10;   inception_block_v2() with new parameter version in ['a', 'b', 'c']&#10;   as in https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py" />
@@ -212,13 +223,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/working/Edward_Tyantov_edited.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-14759">
-          <caret line="42" lean-forward="true" selection-end-line="1074" />
+        <state relative-caret-position="438">
+          <caret line="410" column="5" lean-forward="true" selection-start-line="410" selection-start-column="5" selection-end-line="410" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="254">
+          <caret line="322" column="80" selection-start-line="322" selection-start-column="80" selection-end-line="322" selection-end-column="98" />
         </state>
       </provider>
     </entry>
