@@ -490,19 +490,26 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
     return result
 
 
-def inception_block_et(inputs, filters, split=False, activation='relu'):
+def inception_block_et(inputs, filters, version='b', activation='relu'):
     """Create an inception block with 2 options.
     For intuition read, parts v1 and v2:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
     Each version/option has 4 verticals in their structure. See the link above.
-    Default option: split=FALSE
-        Create an inception block described in v1, section
-    Alternative option: split=TRUE
+    Default option: version='b'
         Create an inception block close to one described in v2, but keeps 5 as a factor for some convolutions
+    Alternative option: version='a'
+        Create an inception block described in v1, section
+
 
     Function author Edward Tyantov. That's why the name: inception_block_et.
     My modifications
+
+        use version='a' instead of split=False
+        use version='b' instead of split=True
+
+        change default to version='b', aka split=True
+
         swap: Conv2D -> BatchNormalization -> activation
         to:   NConv2D blocks. See NConv2D documentation for them.
 
@@ -517,17 +524,18 @@ def inception_block_et(inputs, filters, split=False, activation='relu'):
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
-    :param split: option of inception block
+    :param version: version of inception block
     :param activation: activation function to use everywhere in the block
     :return: output of the inception block, given inputs
     """
     assert filters % 16 == 0
+    assert version in ['a', 'b']
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
     # vertical 1
     c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same',
                   activation=activation, kernel_initializer='he_normal')(inputs)
-    if split:
+    if version == 'b':
         c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 5), padding='same',
                        activation=activation, kernel_initializer='he_normal')(c1_1)
         c1 = Conv2D(filters=filters // 8, kernel_size=(5, 1), kernel_initializer='he_normal', padding='same')(c1_2)
@@ -537,7 +545,7 @@ def inception_block_et(inputs, filters, split=False, activation='relu'):
     # vertical 2
     c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), padding='same',
                   activation=activation, kernel_initializer='he_normal')(inputs)
-    if split:
+    if version == 'b':
         c2_2 = NConv2D(filters=filters // 2, kernel_size=(1, 3), padding='same',
                        activation=activation, kernel_initializer='he_normal')(c2_1)
         c2 = Conv2D(filters=filters // 2, kernel_size=(3, 1), kernel_initializer='he_normal', padding='same')(c2_2)

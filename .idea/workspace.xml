@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="Code updates:&#10;1) add kernel_initializer argument to NConv2D() so it can be used in&#10;   inception blocks&#10;2) Delete old versions of inception blocks&#10;3) Write up 2 new functions:&#10;   inception_block_v1() with new parameter version in ['a', 'b'], and&#10;   inception_block_v2() with new parameter version in ['a', 'b', 'c']&#10;   as in https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" afterDir="false" />
+    <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/working/urss_final_code_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/urss_final_code_script.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,20 +13,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-773">
-              <caret line="599" column="5" lean-forward="true" selection-start-line="599" selection-start-column="5" selection-end-line="599" selection-end-column="5" />
+            <state relative-caret-position="452">
+              <caret line="510" column="14" selection-start-line="510" selection-start-column="14" selection-end-line="510" selection-end-column="14" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/working/Edward_Tyantov_edited.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2603">
-              <caret line="537" column="5" selection-start-line="537" selection-start-column="5" selection-end-line="537" selection-end-column="5" />
+            <state relative-caret-position="507">
+              <caret line="401" column="47" selection-start-line="401" selection-start-column="47" selection-end-line="401" selection-end-column="47" />
             </state>
           </provider>
         </entry>
@@ -43,7 +42,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>img_cols</find>
       <find>os</find>
       <find>prepro</find>
       <find>padding</find>
@@ -73,6 +71,7 @@
       <find>inception_block_v2</find>
       <find>Conv2D</find>
       <find>&quot;</find>
+      <find>c3</find>
     </findStrings>
     <replaceStrings>
       <replace>split</replace>
@@ -81,9 +80,15 @@
       <replace>c4</replace>
       <replace>padding='same', activation=activation</replace>
       <replace>'</replace>
+      <replace>c1</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="George Batchkala &lt;george.batchkala@gmail.com&gt;" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
@@ -93,8 +98,8 @@
         <option value="$USER_HOME$/Downloads/urss-all-code.py" />
         <option value="$PROJECT_DIR$/Edward_Tyantov_edited.py" />
         <option value="$PROJECT_DIR$/urss_final_code_script.py" />
-        <option value="$PROJECT_DIR$/working/urss_final_code_script.py" />
         <option value="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" />
+        <option value="$PROJECT_DIR$/working/urss_final_code_script.py" />
       </list>
     </option>
   </component>
@@ -158,7 +163,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" weight="0.32983682" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" visible="true" weight="0.32983682" />
       <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32983682" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" weight="0.32983682" />
@@ -183,7 +188,11 @@
     <MESSAGE value="Code updates:&#10;1) split u_model into u_model_blocks and u_model&#10;2) split and duplicate imports&#10;3) in u_model: import u_model_blocks&#10;&#10;4) split inception_block() into inception_block_v1b() and&#10;   inception_block_v2()&#10;5) remove split argument everywhere for the inception_block() &#10;&#10;6) add configuration module, where get_unet and inception_block&#10;   are specified" />
     <MESSAGE value="update a comment:&#10;# tensorflow backend -&gt; # using tensorflow backend" />
     <MESSAGE value="Code updates:&#10;1) add kernel_initializer argument to NConv2D() so it can be used in&#10;   inception blocks&#10;2) Delete old versions of inception blocks&#10;3) Write up 2 new functions:&#10;   inception_block_v1() with new parameter version in ['a', 'b'], and&#10;   inception_block_v2() with new parameter version in ['a', 'b', 'c']&#10;   as in https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202" />
-    <option name="LAST_COMMIT_MESSAGE" value="Code updates:&#10;1) add kernel_initializer argument to NConv2D() so it can be used in&#10;   inception blocks&#10;2) Delete old versions of inception blocks&#10;3) Write up 2 new functions:&#10;   inception_block_v1() with new parameter version in ['a', 'b'], and&#10;   inception_block_v2() with new parameter version in ['a', 'b', 'c']&#10;   as in https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202" />
+    <MESSAGE value="Code changes:&#10;1) Change default argument of NConv2D() to padding='valid' to coincide&#10;   with Conv2D() arguments&#10;2) Add padding='same' to all NConv2D()&#10;3) Remove activation=activation from Conv2D(), it should not be there:&#10;   In inception block's verticals before concatenation the last&#10;   convolution should not be activated since they well be normalized&#10;   and activated after concatenation" />
+    <MESSAGE value="Changes made to inception_block_v1(), inception_block_v2()&#10;1) Add more docstring info&#10;2) Swap everywhere:&#10;   the combination of Conv2D() and further activation&#10;   -&gt; Conv2D(activation=activation)&#10;3) Use Nconv2D() in middle layers of inception_block_v2():&#10;   vertical 1, versions b and c" />
+    <MESSAGE value="Update documentation to inception_block()" />
+    <MESSAGE value="Adding inception_block_et() - modified version of Edward Tyantov's&#10;        inception_block() function&#10;&#10;Modifications made: (should work in exactly the same way)&#10;&#10;        swap: Conv2D -&gt; BatchNormalization -&gt; activation&#10;        to:   NConv2D blocks. See NConv2D documentation for them.&#10;&#10;        swap: Conv2D -&gt; activation&#10;        to:   Conv2D -&gt; Conv2D(activation=activation)&#10;&#10;        change the order of the verticals to coincide with v2_paper notation&#10;&#10;        change names of the outputs of the block verticals to c1, c2, c3, c4&#10;&#10;        use 'rusult' instead of 'res' to avoid confusion with residuals" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding inception_block_et() - modified version of Edward Tyantov's&#10;        inception_block() function&#10;&#10;Modifications made: (should work in exactly the same way)&#10;&#10;        swap: Conv2D -&gt; BatchNormalization -&gt; activation&#10;        to:   NConv2D blocks. See NConv2D documentation for them.&#10;&#10;        swap: Conv2D -&gt; activation&#10;        to:   Conv2D -&gt; Conv2D(activation=activation)&#10;&#10;        change the order of the verticals to coincide with v2_paper notation&#10;&#10;        change names of the outputs of the block verticals to c1, c2, c3, c4&#10;&#10;        use 'rusult' instead of 'res' to avoid confusion with residuals" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py" />
@@ -225,17 +234,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
+    <entry file="file://$PROJECT_DIR$/working/Edward_Tyantov_edited.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-773">
-          <caret line="599" column="5" lean-forward="true" selection-start-line="599" selection-start-column="5" selection-end-line="599" selection-end-column="5" />
+        <state relative-caret-position="507">
+          <caret line="401" column="47" selection-start-line="401" selection-start-column="47" selection-end-line="401" selection-end-column="47" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/working/Edward_Tyantov_edited.py">
+    <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2603">
-          <caret line="537" column="5" selection-start-line="537" selection-start-column="5" selection-end-line="537" selection-end-column="5" />
+        <state relative-caret-position="452">
+          <caret line="510" column="14" selection-start-line="510" selection-start-column="14" selection-end-line="510" selection-end-column="14" />
         </state>
       </provider>
     </entry>
