@@ -1,7 +1,5 @@
 # This Python 3 environment comes with many helpful analytics libraries installed
 # It is defined by the kaggle/python docker image: https://github.com/kaggle/docker-python
-# For example, here's several helpful packages to load in
-
 
 ########################################################################################################################
 # ======================================================================================================================
@@ -306,94 +304,106 @@ if __name__ == '__main__':
 
 ########################################################################################################################
 # ======================================================================================================================
-# u_model - needed for train
+# u_model_blocks
 # ======================================================================================================================
 ########################################################################################################################
+# needed for u_model
 
 # standard-module imports
 import numpy as np
-from keras.models import Model
-from keras.layers import Input, add, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Dense
+from keras.layers import add, concatenate, Conv2D, MaxPooling2D
 from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
 from keras.layers.advanced_activations import ELU, LeakyReLU
-from keras.optimizers import Adam
-
-# # separate-module imports
-# from metric import dice_coef, dice_coef_loss
-
-
-IMG_ROWS, IMG_COLS = 80, 112
-K.set_image_data_format('channels_last')  # (number of images, rows per image, cols per image, channels)
-
 
 # ======================================================================================================================
 # Different blocks used for U-net
 # ======================================================================================================================
 
-def inception_block(inputs, filters, split=False, activation='relu'):
-    """Create an inception block with 2 options described in:
+def inception_block_v1b(inputs, filters, activation='relu'):
+    """Create an inception block
+
+    Create an inception block described in v1, section b of:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
-
-    Default option: split=FALSE
-        Create an inception block described in v1, section b
-
-    Alternative option: split=TRUE
-        Create an inception block described in v2
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters).
-    :param split: option of inception block
     :param activation: activation function to use everywhere in the block
     :return: output of the inception block, given inputs
     """
     assert filters % 16 == 0
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
-    #
     # vertical 1
-    #
     c1_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
 
-    #
     # vertical 2
-    #
     c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
     # no batch norm
     c2_1 = actv()(c2_1)
-    if split:
-        c2_2 = Conv2D(filters=filters // 2, kernel_size=(1, 3), kernel_initializer='he_normal', padding='same')(c2_1)
-        c2_2 = BatchNormalization(axis=3)(c2_2)
-        c2_2 = actv()(c2_2)
-        c2_3 = Conv2D(filters=filters // 2, kernel_size=(3, 1), kernel_initializer='he_normal', padding='same')(c2_2)
-    else:
-        c2_3 = Conv2D(filters=filters // 2, kernel_size=(3, 3), kernel_initializer='he_normal', padding='same')(c2_1)
+    c2_3 = Conv2D(filters=filters // 2, kernel_size=(3, 3), kernel_initializer='he_normal', padding='same')(c2_1)
 
-    #
     # vertical 3
-    #
     c3_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
     # no batch norm
     c3_1 = actv()(c3_1)
-    if split:
-        c3_2 = Conv2D(filters=filters // 8, kernel_size=(1, 5), kernel_initializer='he_normal', padding='same')(c3_1)
-        c3_2 = BatchNormalization(axis=3)(c3_2)  # mode=batch_mode # 0 in this case
-        c3_2 = actv()(c3_2)
-        c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 1), kernel_initializer='he_normal', padding='same')(c3_2)
-    else:
-        c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 5), kernel_initializer='he_normal', padding='same')(c3_1)
+    c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 5), kernel_initializer='he_normal', padding='same')(c3_1)
 
-    #
     # vertical 4
-    #
     p4_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
     c4_2 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p4_1)
 
-    #
     # concatenating verticals together
-    #
     res = concatenate([c1_1, c2_3, c3_3, c4_2], axis=3)
     res = BatchNormalization(axis=3)(res)
     res = actv()(res)
+
+    return res
+
+
+def inception_block_v2(inputs, filters, activation='relu'):
+    """Create an inception block
+
+    Create an inception block described in v1, section b of:
+    https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
+
+    :param inputs: Input 4D tensor (samples, rows, cols, channels)
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters).
+    :param activation: activation function to use everywhere in the block
+    :return: output of the inception block, given inputs
+    """
+    assert filters % 16 == 0
+    actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
+
+    # vertical 1
+    c1_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+
+    # vertical 2
+    c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    # no batch norm
+    c2_1 = actv()(c2_1)
+    c2_2 = Conv2D(filters=filters // 2, kernel_size=(1, 3), kernel_initializer='he_normal', padding='same')(c2_1)
+    c2_2 = BatchNormalization(axis=3)(c2_2)
+    c2_2 = actv()(c2_2)
+    c2_3 = Conv2D(filters=filters // 2, kernel_size=(3, 1), kernel_initializer='he_normal', padding='same')(c2_2)
+
+    # vertical 3
+    c3_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    # no batch norm
+    c3_1 = actv()(c3_1)
+    c3_2 = Conv2D(filters=filters // 8, kernel_size=(1, 5), kernel_initializer='he_normal', padding='same')(c3_1)
+    c3_2 = BatchNormalization(axis=3)(c3_2)  # mode=batch_mode # 0 in this case
+    c3_2 = actv()(c3_2)
+    c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 1), kernel_initializer='he_normal', padding='same')(c3_2)
+
+    # vertical 4
+    p4_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
+    c4_2 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p4_1)
+
+    # concatenating verticals together
+    res = concatenate([c1_1, c2_3, c3_3, c4_2], axis=3)
+    res = BatchNormalization(axis=3)(res)
+    res = actv()(res)
+
     return res
 
 
@@ -456,10 +466,33 @@ def NConv2D(filters, kernel_size, padding='same', strides=(1, 1)):
 
     return f
 
-# ======================================================================================================================
-# Different U-net architectures
-# ======================================================================================================================
 
+########################################################################################################################
+# ======================================================================================================================
+# u_model
+# ======================================================================================================================
+########################################################################################################################
+# needed for train
+
+import numpy as np
+from keras.layers import Input, add, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Dense
+from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
+from keras.layers.advanced_activations import ELU, LeakyReLU
+from keras.models import Model
+from keras.optimizers import Adam
+
+# # separate-module imports
+# from metric import dice_coef, dice_coef_loss
+# import u_model_blocks
+
+
+IMG_ROWS, IMG_COLS = 80, 112
+K.set_image_data_format('channels_last')  # (number of images, rows per image, cols per image, channels)
+
+
+# ======================================================================================================================
+# U-net with Inception blocks, MaxPooling2D
+# ======================================================================================================================
 
 def get_unet_inception_2head_maxpooling2d(optimizer):
     """
@@ -478,7 +511,6 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     :return: compiled u-net, Keras.Model object
     """
 
-    split = True
     act = 'elu'
 
     # input
@@ -489,28 +521,28 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     # down the U-net
     #
 
-    conv1 = inception_block(inputs, 32, split=split, activation=act)
+    conv1 = inception_block(inputs, 32, activation=act)
     print("conv1", conv1._keras_shape)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
     print("pool1", pool1._keras_shape)
     pool1 = Dropout(0.5)(pool1)
     print("pool1", pool1._keras_shape)
 
-    conv2 = inception_block(pool1, 64, split=split, activation=act)
+    conv2 = inception_block(pool1, 64, activation=act)
     print("conv2", conv2._keras_shape)
     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
     print("pool2", pool2._keras_shape)
     pool2 = Dropout(0.5)(pool2)
     print("pool2", pool2._keras_shape)
 
-    conv3 = inception_block(pool2, 128, split=split, activation=act)
+    conv3 = inception_block(pool2, 128, activation=act)
     print("conv3", conv3._keras_shape)
     pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
     print("pool3", pool3._keras_shape)
     pool3 = Dropout(0.5)(pool3)
     print("pool3", pool3._keras_shape)
 
-    conv4 = inception_block(pool3, 256, split=split, activation=act)
+    conv4 = inception_block(pool3, 256, activation=act)
     print("conv4", conv4._keras_shape)
     pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
     print("pool4", pool4._keras_shape)
@@ -520,7 +552,7 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     #
     # bottom level of the U-net
     #
-    conv5 = inception_block(pool4, 512, split=split, activation=act)
+    conv5 = inception_block(pool4, 512, activation=act)
     print("conv5", conv5._keras_shape)
     conv5 = Dropout(0.5)(conv5)
     print("conv5", conv5._keras_shape)
@@ -539,7 +571,7 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     after_conv4 = rblock(conv4, 1, 256)
     print("after_conv4", after_conv4._keras_shape)
     up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), after_conv4], axis=3)
-    conv6 = inception_block(up6, 256, split=split, activation=act)
+    conv6 = inception_block(up6, 256, activation=act)
     print("conv6", conv6._keras_shape)
     conv6 = Dropout(0.5)(conv6)
     print("conv6", conv6._keras_shape)
@@ -547,7 +579,7 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     after_conv3 = rblock(conv3, 1, 128)
     print("after_conv3", after_conv3._keras_shape)
     up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), after_conv3], axis=3)
-    conv7 = inception_block(up7, 128, split=split, activation=act)
+    conv7 = inception_block(up7, 128, activation=act)
     print("conv7", conv7._keras_shape)
     conv7 = Dropout(0.5)(conv7)
     print("conv7", conv7._keras_shape)
@@ -555,7 +587,7 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     after_conv2 = rblock(conv2, 1, 64)
     print("after_conv2", after_conv2._keras_shape)
     up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), after_conv2], axis=3)
-    conv8 = inception_block(up8, 64, split=split, activation=act)  # batch_mode=2
+    conv8 = inception_block(up8, 64, activation=act)  # batch_mode=2
     print("conv8", conv8._keras_shape)
     conv8 = Dropout(0.5)(conv8)
     print("conv8", conv8._keras_shape)
@@ -563,7 +595,7 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     after_conv1 = rblock(conv1, 1, 32)
     print("after_conv1", after_conv1._keras_shape)
     up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), after_conv1], axis=3)
-    conv9 = inception_block(up9, 32, split=split, activation=act)  # batch_mode=2
+    conv9 = inception_block(up9, 32, activation=act)  # batch_mode=2
     print("conv9", conv9._keras_shape)
     conv9 = Dropout(0.5)(conv9)
     print("conv9", conv9._keras_shape)
@@ -606,7 +638,6 @@ def get_unet_inception_2head_nconv2d(optimizer):
     :return: compiled u-net, Keras.Model object
     """
 
-    split = True
     act = 'elu'
 
     # input
@@ -617,28 +648,28 @@ def get_unet_inception_2head_nconv2d(optimizer):
     # down the U-net
     #
 
-    conv1 = inception_block(inputs, 32, split=split, activation=act)
+    conv1 = inception_block(inputs, 32, activation=act)
     print("conv1", conv1._keras_shape)
     pool1 = NConv2D(32, kernel_size=(3, 3), strides=(2, 2))(conv1)
     print("pool1", pool1._keras_shape)
     pool1 = Dropout(0.5)(pool1)
     print("pool1", pool1._keras_shape)
 
-    conv2 = inception_block(pool1, 64, split=split, activation=act)
+    conv2 = inception_block(pool1, 64, activation=act)
     print("conv2", conv2._keras_shape)
     pool2 = NConv2D(64, kernel_size=(3, 3), strides=(2, 2))(conv2)
     print("pool2", pool2._keras_shape)
     pool2 = Dropout(0.5)(pool2)
     print("pool2", pool2._keras_shape)
 
-    conv3 = inception_block(pool2, 128, split=split, activation=act)
+    conv3 = inception_block(pool2, 128, activation=act)
     print("conv3", conv3._keras_shape)
     pool3 = NConv2D(128, kernel_size=(3, 3), strides=(2, 2))(conv3)
     print("pool3", pool3._keras_shape)
     pool3 = Dropout(0.5)(pool3)
     print("pool3", pool3._keras_shape)
 
-    conv4 = inception_block(pool3, 256, split=split, activation=act)
+    conv4 = inception_block(pool3, 256, activation=act)
     print("conv4", conv4._keras_shape)
     pool4 = NConv2D(256, kernel_size=(3, 3), strides=(2, 2))(conv4)
     print("pool4", pool4._keras_shape)
@@ -648,7 +679,7 @@ def get_unet_inception_2head_nconv2d(optimizer):
     #
     # bottom level of the U-net
     #
-    conv5 = inception_block(pool4, 512, split=split, activation=act)
+    conv5 = inception_block(pool4, 512, activation=act)
     print("conv5", conv5._keras_shape)
     conv5 = Dropout(0.5)(conv5)
     print("conv5", conv5._keras_shape)
@@ -667,7 +698,7 @@ def get_unet_inception_2head_nconv2d(optimizer):
     after_conv4 = rblock(conv4, 1, 256)
     print("after_conv4", after_conv4._keras_shape)
     up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), after_conv4], axis=3)
-    conv6 = inception_block(up6, 256, split=split, activation=act)
+    conv6 = inception_block(up6, 256, activation=act)
     print("conv6", conv6._keras_shape)
     conv6 = Dropout(0.5)(conv6)
     print("conv6", conv6._keras_shape)
@@ -675,7 +706,7 @@ def get_unet_inception_2head_nconv2d(optimizer):
     after_conv3 = rblock(conv3, 1, 128)
     print("after_conv3", after_conv3._keras_shape)
     up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), after_conv3], axis=3)
-    conv7 = inception_block(up7, 128, split=split, activation=act)
+    conv7 = inception_block(up7, 128, activation=act)
     print("conv7", conv7._keras_shape)
     conv7 = Dropout(0.5)(conv7)
     print("conv7", conv7._keras_shape)
@@ -683,7 +714,7 @@ def get_unet_inception_2head_nconv2d(optimizer):
     after_conv2 = rblock(conv2, 1, 64)
     print("after_conv2", after_conv2._keras_shape)
     up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), after_conv2], axis=3)
-    conv8 = inception_block(up8, 64, split=split, activation=act)
+    conv8 = inception_block(up8, 64, activation=act)
     print("conv8", conv8._keras_shape)
     conv8 = Dropout(0.5)(conv8)
     print("conv8", conv8._keras_shape)
@@ -691,7 +722,7 @@ def get_unet_inception_2head_nconv2d(optimizer):
     after_conv1 = rblock(conv1, 1, 32)
     print("after_conv1", after_conv1._keras_shape)
     up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), after_conv1], axis=3)
-    conv9 = inception_block(up9, 32, split=split, activation=act)
+    conv9 = inception_block(up9, 32, activation=act)
     print("conv9", conv9._keras_shape)
     conv9 = Dropout(0.5)(conv9)
     print("conv9", conv9._keras_shape)
@@ -714,20 +745,21 @@ def get_unet_inception_2head_nconv2d(optimizer):
 
 
 ########################################################################################################################
-# Choose a possible architecture combination
+# ======================================================================================================================
+# configuration
+# ======================================================================================================================
 ########################################################################################################################
 
 # get_unet() allows to try other versions of the u-net, if more are specified
 get_unet = get_unet_inception_2head_nconv2d
 
 # inception_block() allows to try other versions of the inception blocks
-inception_block = inception_block
+inception_block = inception_block_v2
 
-
-########################################################################################################################
 
 # ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
+    # test the u-net without training
 
     img_rows = IMG_ROWS
     img_cols = IMG_COLS
@@ -740,6 +772,7 @@ if __name__ == '__main__':
     print(result)
     print('params', model.count_params())
     print('layer num', len(model.layers))
+
 
 ########################################################################################################################
 # ======================================================================================================================
