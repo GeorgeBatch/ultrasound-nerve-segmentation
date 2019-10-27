@@ -364,7 +364,7 @@ def inception_block(inputs, filters, split=False, activation='relu'):
         Create an inception block described in v1, section b
 
     Alternative option: split=TRUE
-        Create an inception block described in v2
+        Create an inception block close to one described in v2, but keeps 5 as a factor for some convolutions
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
@@ -399,7 +399,7 @@ def inception_block(inputs, filters, split=False, activation='relu'):
     c3_1 = actv()(c3_1)
     if split:
         c3_2 = Conv2D(filters=filters // 8, kernel_size=(1, 5), kernel_initializer='he_normal', padding='same')(c3_1)
-        c3_2 = BatchNormalization(axis=3)(c3_2)  # mode=batch_mode # 0 in this case
+        c3_2 = BatchNormalization(axis=3)(c3_2)
         c3_2 = actv()(c3_2)
         c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 1), kernel_initializer='he_normal', padding='same')(c3_2)
     else:
