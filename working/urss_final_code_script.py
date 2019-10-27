@@ -320,7 +320,7 @@ from keras.layers.advanced_activations import ELU, LeakyReLU
 # Different blocks used for U-net
 # ======================================================================================================================
 
-def NConv2D(filters, kernel_size, strides=1, padding='same', activation='relu', kernel_initializer='glorot_uniform'):
+def NConv2D(filters, kernel_size, strides=(1, 1), padding='valid', activation='relu', kernel_initializer='glorot_uniform'):
     """Create a (Normalized Conv2D followed by a chosen activation) function
     Conv2D -> BatchNormalization -> activation()
 
@@ -331,10 +331,9 @@ def NConv2D(filters, kernel_size, strides=1, padding='same', activation='relu', 
     :param strides: An integer or tuple/list of 2 integers, specifying the strides of the convolution along the height
                     and width. Can be a single integer to specify the same value for all spatial dimensions.
                     Specifying any stride value != 1 is incompatible with specifying any dilation_rate value != 1.
-    :param padding: one of "valid" or "same" (case-insensitive)
+    :param padding: one of 'valid' or 'same' (case-insensitive), 'valid' by default to have the same as Conv2D
     :param activation: specify the activation to be performed after BatchNormalization
     :param kernel_initializer: Initializer for the kernel weights matrix (see initializers in keras documentation)
-
     :return: 2D Convolution function, followed by BatchNormalization across filters and ELU activation
     """
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
@@ -357,7 +356,7 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
     :param version: version of inception block, one of 'a', 'b' (case sensitive)
-    :param activation: activation function to use everywhere in the block
+    :param activation: string, specifies activation function to use everywhere in the block
     :return: output of the inception block, given inputs
     """
     assert filters % 16 == 0
@@ -366,26 +365,26 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
 
     # vertical 1
     if version == 'b':
-        c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+        c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
         c1_1 = actv()(c1_1)
-    c1 = Conv2D(filters=filters // 8, kernel_size=(5, 5), kernel_initializer='he_normal', padding='same')(c1_1)
+    c1 = Conv2D(filters=filters // 8, kernel_size=(5, 5), padding='same', kernel_initializer='he_normal')(c1_1)
 
     # vertical 2
     if version == 'b':
-        c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), kernel_initializer='he_normal',
-                      padding='same')(inputs)
+        c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1),
+                      padding='same', kernel_initializer='he_normal')(inputs)
         c2_1 = actv()(c2_1)
-    c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), kernel_initializer='he_normal', padding='same')(c2_1)
+    c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), padding='same', kernel_initializer='he_normal')(c2_1)
 
     # vertical 3
     p3_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
     if version == 'b':
-        c3 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p3_1)
+        c3 = Conv2D(filters=filters // 8, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(p3_1)
     else:
         c3 = p3_1
         
     # vertical 1
-    c4_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    c4_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
     c4 = c4_1
 
     # concatenating verticals together
@@ -404,7 +403,7 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
     :param version: version of inception block, one of 'a', 'b', 'c' (case sensitive)
-    :param activation: activation function to use everywhere in the block
+    :param activation: string, specifies activation function to use everywhere in the block
     :return: output of the inception block, given inputs
     """
     assert filters % 16 == 0
@@ -413,42 +412,46 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
 
 
     # vertical 1
-    c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
     c1_1 = actv()(c1_1)
     if version == 'a':
-        c1_2 = NConv2D(filters=filters // 8, kernel_size=3, activation=activation, kernel_initializer='he_normal')(c1_1)
-        c1 = Conv2D(filters=filters // 8, kernel_size=3, activation=activation, kernel_initializer='he_normal')(c1_2)
+        c1_2 = NConv2D(filters=filters // 8, kernel_size=3, padding='same',
+                       activation=activation, kernel_initializer='he_normal')(c1_1)
+        c1 = Conv2D(filters=filters // 8, kernel_size=3, padding='same', kernel_initializer='he_normal')(c1_2)
     elif version == 'b':
-        c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 3), activation=activation, kernel_initializer='he_normal')(c1_1)
-        c1_3 = Conv2D(filters=filters // 8, kernel_size=(3, 1), activation=activation, kernel_initializer='he_normal')(c1_2)
-        c1_4 = Conv2D(filters=filters // 8, kernel_size=(1, 3), activation=activation, kernel_initializer='he_normal')(c1_3)
-        c1 = Conv2D(filters=filters // 8, kernel_size=(3, 1), activation=activation, kernel_initializer='he_normal')(c1_4)
+        c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 3), padding='same',
+                       activation=activation, kernel_initializer='he_normal')(c1_1)
+        c1_3 = Conv2D(filters=filters // 8, kernel_size=(3, 1), padding='same', kernel_initializer='he_normal')(c1_2)
+        c1_4 = Conv2D(filters=filters // 8, kernel_size=(1, 3), padding='same', kernel_initializer='he_normal')(c1_3)
+        c1 = Conv2D(filters=filters // 8, kernel_size=(3, 1), padding='same', kernel_initializer='he_normal')(c1_4)
     else:
-        c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 3), activation=activation, kernel_initializer='he_normal')(c1_1)
-        c1_3 = Conv2D(filters=filters // 8, kernel_size=3, activation=activation, kernel_initializer='he_normal')(c1_2)
-        c1_41 = Conv2D(filters=filters // 8, kernel_size=(1, 3), activation=activation, kernel_initializer='he_normal')(c1_3)
-        c1_42 = Conv2D(filters=filters // 8, kernel_size=(3, 1), activation=activation, kernel_initializer='he_normal')(c1_3)
+        c1_2 = NConv2D(filters=filters // 8, kernel_size=(1, 3), padding='same',
+                       activation=activation, kernel_initializer='he_normal')(c1_1)
+        c1_3 = Conv2D(filters=filters // 8, kernel_size=3, padding='same', kernel_initializer='he_normal')(c1_2)
+        c1_41 = Conv2D(filters=filters // 8, kernel_size=(1, 3), padding='same', kernel_initializer='he_normal')(c1_3)
+        c1_42 = Conv2D(filters=filters // 8, kernel_size=(3, 1), padding='same', kernel_initializer='he_normal')(c1_3)
         c1 = concatenate([c1_41, c1_42], axis=3)
 
     # vertical 2
-    c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
     c2_1 = actv()(c2_1)
     if version == 'a':
-        c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), kernel_initializer='he_normal', padding='same')(c2_1)
+        c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), padding='same', kernel_initializer='he_normal')(c2_1)
     elif version == 'b':
-        c2_2 = NConv2D(filters=filters // 2, kernel_size=(1, 3), kernel_initializer='he_normal', padding='same')(c2_1)
-        c2 = Conv2D(filters=filters // 2, kernel_size=(3, 1), kernel_initializer='he_normal', padding='same')(c2_2)
+        c2_2 = NConv2D(filters=filters // 2, kernel_size=(1, 3), padding='same',
+                       activation=activation, kernel_initializer='he_normal')(c2_1)
+        c2 = Conv2D(filters=filters // 2, kernel_size=(3, 1), padding='same', kernel_initializer='he_normal')(c2_2)
     else:
-        c2_21 = NConv2D(filters=filters // 2, kernel_size=(1, 3), kernel_initializer='he_normal', padding='same')(c2_1)
-        c2_22 = NConv2D(filters=filters // 2, kernel_size=(3, 1), kernel_initializer='he_normal', padding='same')(c2_1)
+        c2_21 = Conv2D(filters=filters // 2, kernel_size=(1, 3), padding='same', kernel_initializer='he_normal')(c2_1)
+        c2_22 = Conv2D(filters=filters // 2, kernel_size=(3, 1), padding='same', kernel_initializer='he_normal')(c2_1)
         c2 = concatenate([c2_21, c2_22], axis=3)
 
     # vertical 3
     p3_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
-    c3 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p3_1)
+    c3 = Conv2D(filters=filters // 8, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(p3_1)
 
     # vertical 4
-    c4 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
+    c4 = Conv2D(filters=filters // 4, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
 
     # concatenating verticals together
     result = concatenate([c1, c2, c3, c4], axis=3)
@@ -679,28 +682,28 @@ def get_unet_inception_2head_nconv2d(optimizer):
 
     conv1 = inception_block(inputs, 32, activation=act)
     print("conv1", conv1._keras_shape)
-    pool1 = NConv2D(32, kernel_size=(3, 3), strides=(2, 2))(conv1)
+    pool1 = NConv2D(32, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv1)
     print("pool1", pool1._keras_shape)
     pool1 = Dropout(0.5)(pool1)
     print("pool1", pool1._keras_shape)
 
     conv2 = inception_block(pool1, 64, activation=act)
     print("conv2", conv2._keras_shape)
-    pool2 = NConv2D(64, kernel_size=(3, 3), strides=(2, 2))(conv2)
+    pool2 = NConv2D(64, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv2)
     print("pool2", pool2._keras_shape)
     pool2 = Dropout(0.5)(pool2)
     print("pool2", pool2._keras_shape)
 
     conv3 = inception_block(pool2, 128, activation=act)
     print("conv3", conv3._keras_shape)
-    pool3 = NConv2D(128, kernel_size=(3, 3), strides=(2, 2))(conv3)
+    pool3 = NConv2D(128, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv3)
     print("pool3", pool3._keras_shape)
     pool3 = Dropout(0.5)(pool3)
     print("pool3", pool3._keras_shape)
 
     conv4 = inception_block(pool3, 256, activation=act)
     print("conv4", conv4._keras_shape)
-    pool4 = NConv2D(256, kernel_size=(3, 3), strides=(2, 2))(conv4)
+    pool4 = NConv2D(256, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv4)
     print("pool4", pool4._keras_shape)
     pool4 = Dropout(0.5)(pool4)
     print("pool4", pool4._keras_shape)
