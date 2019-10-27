@@ -1,7 +1,7 @@
 Raw images (from Kaggle) should be put here according to this structure:
 
 ```
--raw
+- ultrasound-nerve-segmentation
  |
  ---- train
  |    |
