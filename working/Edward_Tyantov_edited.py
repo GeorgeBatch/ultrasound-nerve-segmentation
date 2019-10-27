@@ -375,12 +375,10 @@ def inception_block(inputs, filters, split=False, activation='relu'):
     assert filters % 16 == 0
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
-    #
     # vertical 1
     #
     c1_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
 
-    #
     # vertical 2
     #
     c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
@@ -394,7 +392,6 @@ def inception_block(inputs, filters, split=False, activation='relu'):
     else:
         c2_3 = Conv2D(filters=filters // 2, kernel_size=(3, 3), kernel_initializer='he_normal', padding='same')(c2_1)
 
-    #
     # vertical 3
     #
     c3_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(inputs)
@@ -408,7 +405,6 @@ def inception_block(inputs, filters, split=False, activation='relu'):
     else:
         c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 5), kernel_initializer='he_normal', padding='same')(c3_1)
 
-    #
     # vertical 4
     #
     p4_1 = MaxPooling2D(pool_size=(3, 3), strides=(1, 1), padding='same')(inputs)
@@ -503,28 +499,28 @@ def get_unet_inception_2head(optimizer):
 
     conv1 = inception_block(inputs, 32, split=split, activation=act)
     print("conv1", conv1._keras_shape)
-    pool1 = NConv2D(32, kernel_size=(3, 3), strides=(2, 2))(conv1)
+    pool1 = NConv2D(32, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv1)
     print("pool1", pool1._keras_shape)
     pool1 = Dropout(0.5)(pool1)
     print("pool1", pool1._keras_shape)
 
     conv2 = inception_block(pool1, 64, split=split, activation=act)
     print("conv2", conv2._keras_shape)
-    pool2 = NConv2D(64, kernel_size=(3, 3), strides=(2, 2))(conv2)
+    pool2 = NConv2D(64, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv2)
     print("pool2", pool2._keras_shape)
     pool2 = Dropout(0.5)(pool2)
     print("pool2", pool2._keras_shape)
 
     conv3 = inception_block(pool2, 128, split=split, activation=act)
     print("conv3", conv3._keras_shape)
-    pool3 = NConv2D(128, kernel_size=(3, 3), strides=(2, 2))(conv3)
+    pool3 = NConv2D(128, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv3)
     print("pool3", pool3._keras_shape)
     pool3 = Dropout(0.5)(pool3)
     print("pool3", pool3._keras_shape)
 
     conv4 = inception_block(pool3, 256, split=split, activation=act)
     print("conv4", conv4._keras_shape)
-    pool4 = NConv2D(256, kernel_size=(3, 3), strides=(2, 2))(conv4)
+    pool4 = NConv2D(256, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv4)
     print("pool4", pool4._keras_shape)
     pool4 = Dropout(0.5)(pool4)
     print("pool4", pool4._keras_shape)
@@ -532,7 +528,6 @@ def get_unet_inception_2head(optimizer):
     #
     # bottom level of the U-net
     #
-
     conv5 = inception_block(pool4, 512, split=split, activation=act)
     print("conv5", conv5._keras_shape)
     conv5 = Dropout(0.5)(conv5)
@@ -541,7 +536,6 @@ def get_unet_inception_2head(optimizer):
     #
     # auxiliary head for predicting probability of nerve presence
     #
-
     pre = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid')(conv5)
     pre = Flatten()(pre)
     aux_out = Dense(1, activation='sigmoid', name='aux_output')(pre)
