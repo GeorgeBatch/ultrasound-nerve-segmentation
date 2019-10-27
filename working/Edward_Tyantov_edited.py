@@ -275,7 +275,7 @@ if __name__ == '__main__':
 
 # standard-module imports
 import numpy as np
-from keras import backend as K  # tensorflow backend
+from keras import backend as K  # using tensorflow backend
 
 smooth = 1.
 
