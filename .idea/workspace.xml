@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/macbookair.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/urss_final_code_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/urss_final_code_script.py" afterDir="false" />
     </list>
@@ -16,8 +17,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/urss_final_code_script.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="381">
-              <caret line="57" column="21" lean-forward="true" selection-start-line="57" selection-start-column="21" selection-end-line="57" selection-end-column="21" />
+            <state relative-caret-position="-290">
+              <caret line="468" column="27" lean-forward="true" selection-start-line="468" selection-start-column="27" selection-end-line="468" selection-end-column="27" />
               <folding>
                 <element signature="e#752#761#0" expanded="true" />
               </folding>
@@ -36,22 +37,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>get_object_existence</find>
-      <find>_pretrained_model_load</find>
-      <find>np.mean</find>
-      <find>self.mean</find>
-      <find>splitted</find>
-      <find>Conv2DTranspose</find>
-      <find>K.set_image_data_format('channels_last')</find>
-      <find>imgs_mask_test_present</find>
-      <find>np.save</find>
-      <find>print</find>
-      <find>imgs_mask_test</find>
-      <find>imgs_id_test</find>
-      <find>preprocess</find>
-      <find>preprocess(</find>
-      <find>resize</find>
-      <find>K</find>
       <find>K.set_image_data_format('</find>
       <find>image_rows = 420</find>
       <find>IMG_ROWS, IMG_COLS = 80, 112</find>
@@ -60,11 +45,28 @@
       <find>smooth = 1.</find>
       <find>img_cols</find>
       <find>os</find>
-      <find>np</find>
       <find>prepro</find>
       <find>K.</find>
-      <find>NConv2D</find>
       <find>padding</find>
+      <find>split=</find>
+      <find>split</find>
+      <find>np</find>
+      <find>np.</find>
+      <find>Model</find>
+      <find>Adam</find>
+      <find>dice_coef</find>
+      <find>add</find>
+      <find>Input</find>
+      <find>concatenate</find>
+      <find>Conv2D</find>
+      <find>MaxPooling2D</find>
+      <find>UpSampling2D</find>
+      <find>Dense</find>
+      <find>BatchNormalization</find>
+      <find>u_model_blocks</find>
+      <find>NConv2D</find>
+      <find>lambda</find>
+      <find>actv</find>
     </findStrings>
     <replaceStrings>
       <replace>split</replace>
@@ -159,7 +161,9 @@
     <MESSAGE value="workspace update" />
     <MESSAGE value="Update urss_final_code_script.py:&#10;1) add documentation to the rest of the functions&#10;2) delete redundant imports and variable assignments in train module&#10;3) delete redundant line of load_test_ids() from train_and_predict()&#10;&#10;Update Edward_Tyantov_edited.py:&#10;1) from keras import backend as K # in metrics module&#10;&#10;Add some words to project dictionary, e.g. keras, preprocess, urss, etc." />
     <MESSAGE value="Style updates:&#10;1) use hashtag lines to highlight the module boundaries&#10;2) rename the sections according to future file names, e.g. Data -&gt; data&#10;   because the module is named data.py&#10;3) make comments fit 80-characters limit&#10;&#10;&#10;Code updates:&#10;1) create a block of code where the choice of architecture will be made&#10;2) make 2 get_unet_... functions: with NConv2D and with MaxPooling&#10;3) update docstrings for these 2 functions&#10;4) delete commented lines of code&#10;5) edit some minor comments within the 2 functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Style updates:&#10;1) use hashtag lines to highlight the module boundaries&#10;2) rename the sections according to future file names, e.g. Data -&gt; data&#10;   because the module is named data.py&#10;3) make comments fit 80-characters limit&#10;&#10;&#10;Code updates:&#10;1) create a block of code where the choice of architecture will be made&#10;2) make 2 get_unet_... functions: with NConv2D and with MaxPooling&#10;3) update docstrings for these 2 functions&#10;4) delete commented lines of code&#10;5) edit some minor comments within the 2 functions" />
+    <MESSAGE value="Style updates:&#10;1) add set up stage to data module&#10;2) add more separators, e.g. # ------" />
+    <MESSAGE value="Code updates:&#10;1) split u_model into u_model_blocks and u_model&#10;2) split and duplicate imports&#10;3) in u_model: import u_model_blocks&#10;&#10;4) split inception_block() into inception_block_v1b() and&#10;   inception_block_v2()&#10;5) remove split argument everywhere for the inception_block() &#10;&#10;6) add configuration module, where get_unet and inception_block&#10;   are specified" />
+    <option name="LAST_COMMIT_MESSAGE" value="Code updates:&#10;1) split u_model into u_model_blocks and u_model&#10;2) split and duplicate imports&#10;3) in u_model: import u_model_blocks&#10;&#10;4) split inception_block() into inception_block_v1b() and&#10;   inception_block_v2()&#10;5) remove split argument everywhere for the inception_block() &#10;&#10;6) add configuration module, where get_unet and inception_block&#10;   are specified" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py">
@@ -202,8 +206,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/urss_final_code_script.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="381">
-          <caret line="57" column="21" lean-forward="true" selection-start-line="57" selection-start-column="21" selection-end-line="57" selection-end-column="21" />
+        <state relative-caret-position="-290">
+          <caret line="468" column="27" lean-forward="true" selection-start-line="468" selection-start-column="27" selection-end-line="468" selection-end-column="27" />
           <folding>
             <element signature="e#752#761#0" expanded="true" />
           </folding>

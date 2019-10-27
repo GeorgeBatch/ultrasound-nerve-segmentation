@@ -315,6 +315,7 @@ from keras.layers import add, concatenate, Conv2D, MaxPooling2D
 from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
 from keras.layers.advanced_activations import ELU, LeakyReLU
 
+
 # ======================================================================================================================
 # Different blocks used for U-net
 # ======================================================================================================================
@@ -353,17 +354,17 @@ def inception_block_v1b(inputs, filters, activation='relu'):
     c4_2 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p4_1)
 
     # concatenating verticals together
-    res = concatenate([c1_1, c2_3, c3_3, c4_2], axis=3)
-    res = BatchNormalization(axis=3)(res)
-    res = actv()(res)
+    result = concatenate([c1_1, c2_3, c3_3, c4_2], axis=3)
+    result = BatchNormalization(axis=3)(result)
+    result = actv()(result)
 
-    return res
+    return result
 
 
 def inception_block_v2(inputs, filters, activation='relu'):
     """Create an inception block
 
-    Create an inception block described in v1, section b of:
+    Create an inception block described in v2 of:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
@@ -391,7 +392,7 @@ def inception_block_v2(inputs, filters, activation='relu'):
     # no batch norm
     c3_1 = actv()(c3_1)
     c3_2 = Conv2D(filters=filters // 8, kernel_size=(1, 5), kernel_initializer='he_normal', padding='same')(c3_1)
-    c3_2 = BatchNormalization(axis=3)(c3_2)  # mode=batch_mode # 0 in this case
+    c3_2 = BatchNormalization(axis=3)(c3_2)
     c3_2 = actv()(c3_2)
     c3_3 = Conv2D(filters=filters // 8, kernel_size=(5, 1), kernel_initializer='he_normal', padding='same')(c3_2)
 
@@ -400,11 +401,11 @@ def inception_block_v2(inputs, filters, activation='relu'):
     c4_2 = Conv2D(filters=filters // 8, kernel_size=(1, 1), kernel_initializer='he_normal', padding='same')(p4_1)
 
     # concatenating verticals together
-    res = concatenate([c1_1, c2_3, c3_3, c4_2], axis=3)
-    res = BatchNormalization(axis=3)(res)
-    res = actv()(res)
+    result = concatenate([c1_1, c2_3, c3_3, c4_2], axis=3)
+    result = BatchNormalization(axis=3)(result)
+    result = actv()(result)
 
-    return res
+    return result
 
 
 # needed for rblock (residual block)
@@ -443,9 +444,9 @@ def rblock(inputs, kernel_size, filters, scale=0.1):
     return ELU()(res)
 
 
-def NConv2D(filters, kernel_size, padding='same', strides=(1, 1)):
+def NConv2D(filters, kernel_size, padding='same', strides=(1, 1), activation='relu'):
     """Create a (Normalized Conv2D followed by ELU activation) function
-    Conv2D -> BatchNormalization -> ELU()
+    Conv2D -> BatchNormalization -> activation()
 
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the
     convolution)
@@ -455,14 +456,17 @@ def NConv2D(filters, kernel_size, padding='same', strides=(1, 1)):
     :param strides: An integer or tuple/list of 2 integers, specifying the strides of the convolution along the height
                     and width. Can be a single integer to specify the same value for all spatial dimensions.
                     Specifying any stride value != 1 is incompatible with specifying any dilation_rate value != 1.
+    :param activation: specify the activation to be performed after BatchNormali
+
     :return: 2D Convolution function, followed by BatchNormalization across filters and ELU activation
     """
+    actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
     def f(_input):
         conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=strides,
                       padding=padding)(_input)
         norm = BatchNormalization(axis=3)(conv)
-        return ELU()(norm)
+        return actv()(norm)
 
     return f
 
@@ -511,6 +515,7 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     :return: compiled u-net, Keras.Model object
     """
 
+    # activation for inception blocks
     act = 'elu'
 
     # input
@@ -638,6 +643,7 @@ def get_unet_inception_2head_nconv2d(optimizer):
     :return: compiled u-net, Keras.Model object
     """
 
+    # activation for inception blocks
     act = 'elu'
 
     # input
