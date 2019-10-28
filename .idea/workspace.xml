@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/working/urss_final_code_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/urss_final_code_script.py" afterDir="false" />
     </list>
@@ -145,7 +147,7 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1874106" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18955651" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32983682" />
@@ -154,7 +156,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" weight="0.32983682" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" visible="true" weight="0.32983682" />
       <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32983682" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" weight="0.32983682" />
@@ -185,7 +187,8 @@
     <MESSAGE value="Adding inception_block_et() - modified version of Edward Tyantov's&#10;        inception_block() function&#10;&#10;Modifications made: (should work in exactly the same way)&#10;&#10;        swap: Conv2D -&gt; BatchNormalization -&gt; activation&#10;        to:   NConv2D blocks. See NConv2D documentation for them.&#10;&#10;        swap: Conv2D -&gt; activation&#10;        to:   Conv2D -&gt; Conv2D(activation=activation)&#10;&#10;        change the order of the verticals to coincide with v2_paper notation&#10;&#10;        change names of the outputs of the block verticals to c1, c2, c3, c4&#10;&#10;        use 'rusult' instead of 'res' to avoid confusion with residuals" />
     <MESSAGE value="Modifications to inception_block_et()&#10;&#10;1) use version='a' instead of split=False&#10;2) use version='b' instead of split=True&#10;3) change default to version='b', aka split=True&#10;4) make appropriate updates to code&#10;5) make appropriate updates to docstring" />
     <MESSAGE value="Internal updates" />
-    <option name="LAST_COMMIT_MESSAGE" value="Internal updates" />
+    <MESSAGE value="Edward_Tyantov_edited.py&#10;1) correct a typo: publically -&gt; publicly&#10;&#10;urss_final_code_script.py&#10;1) add comment for actv in 3 inception blocks:&#10;   actv is a function, not a string, like activation&#10;2) add comment for act in get_unet_...:&#10;  in contrast to (1), there is is a string&#10;  &#10;internal workspace updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="Edward_Tyantov_edited.py&#10;1) correct a typo: publically -&gt; publicly&#10;&#10;urss_final_code_script.py&#10;1) add comment for actv in 3 inception blocks:&#10;   actv is a function, not a string, like activation&#10;2) add comment for act in get_unet_...:&#10;  in contrast to (1), there is is a string&#10;  &#10;internal workspace updates" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py" />
@@ -213,20 +216,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Edward_Tyantov_edited.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="598" column="16" lean-forward="true" selection-start-line="485" selection-end-line="598" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/urss_final_code_script.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6990">
-          <caret line="468" column="27" selection-start-line="468" selection-start-column="27" selection-end-line="468" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Edward_Tyantov_edited.py" />
+    <entry file="file://$PROJECT_DIR$/urss_final_code_script.py" />
     <entry file="file://$PROJECT_DIR$/working/Edward_Tyantov_edited.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-184">
