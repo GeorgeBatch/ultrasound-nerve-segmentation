@@ -336,6 +336,7 @@ def NConv2D(filters, kernel_size, strides=(1, 1), padding='valid', activation='r
     :param kernel_initializer: Initializer for the kernel weights matrix (see initializers in keras documentation)
     :return: 2D Convolution function, followed by BatchNormalization across filters and ELU activation
     """
+    # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
     def f(_input):
@@ -373,6 +374,7 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
     """
     assert filters % 16 == 0
     assert version in ['a', 'b']
+    # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
     # vertical 1
@@ -436,6 +438,7 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
     """
     assert filters % 16 == 0
     assert version in ['a', 'b', 'c']
+    # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
     # vertical 1
@@ -530,6 +533,7 @@ def inception_block_et(inputs, filters, version='b', activation='relu'):
     """
     assert filters % 16 == 0
     assert version in ['a', 'b']
+    # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
     # vertical 1
@@ -646,7 +650,7 @@ def get_unet_inception_2head_maxpooling2d(optimizer):
     :return: compiled u-net, Keras.Model object
     """
 
-    # activation for inception blocks
+    # activation for inception blocks, string
     act = 'elu'
 
     # input

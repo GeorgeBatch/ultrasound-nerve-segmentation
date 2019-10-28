@@ -27,7 +27,7 @@
 # help furure beginners to understand this code quicker.
 
 
-# The code was published without a licence and publically available on the author's GitHub page without any licence.
+# The code was published without a licence and publicly available on the author's GitHub page without any licence.
 # It was initially based on the code by Marko Jocić (later MJ), which is confirmed by ET in the very end of
 # the README.md file. The code by MJ was published under the MIT licence. You can find this code on the author's
 # GitHub page: https://github.com/jocicmarko/ultrasound-nerve-segmentation/
