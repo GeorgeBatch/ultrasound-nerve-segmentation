@@ -86,3 +86,108 @@ Marko Jocić released the code at the very beginning of the competition. I decid
 * I found Edward's code too complicated at times and wanted to have the code, which I could write myself from the very beginning. Due to this reason, I was simplifying the code where possible, without changing the final result.
 * Due to some reason, Marko Jocić's code did not give me the 0.57 result, as stated in his Kaggle notebook.
 * Finally, as you hopefully already read in my "Warning" section, I needed to be able to run the code on Kaggle servers, which was not possible, given the original code. The code by both authors did not compile. This happened because of the changes made to the Python libraries since 2016 when the competition was held. Even after arranging all the code together and fixing the compilation problem, the code had many bugs, occurring due to other Python library updates. Some of the bugs were left unchanged in author's GitHub versions.
+
+
+## Running the code - check for spelling errors and accuracy
+
+### Running project's code
+
+#### Running on Kaggle machines
+To run this code on Kaggle machines you can fork and run the notebook available through this link:
+https://www.kaggle.com/gbatchkala/urss-2019-project-review
+
+Some modules take several minutes to run. To execute a specific module, you will either have to set its execute parameter to **True**, or set **execute_all** parameter to **True**, which you can find in the next code block. The former will execute a specific module, while the latter will allow to execute all modules.
+
+You can also run this code in separate Kaggle script, which is just a concatenated version of all code in this notebook. The script is available through these links:
+* Kaggle: https://www.kaggle.com/gbatchkala/urss-final-code-script
+* GitHub: https://github.com/GeorgeBatch/ultrasound-nerve-segmentation/blob/master/urss_final_code_script.py
+
+#### Running on personal machines
+If you would like to work with the code presented below on your own machine, I recommend cloning my GitHub repository: https://github.com/GeorgeBatch/ultrasound-nerve-segmentation. This way you will not need to set up a directory.
+
+#### Setting up your directory
+
+If you decided to download code in separate files, first, you will need to set up your directory structure as shown bolow. The structure mimics Kaggles's directory structure. On Kaggle, your script/notebook is in the working directory by default, while any data you upload goes inside the input directory.
+
+```
+- working
+  |
+  ---- Edward_Tyantov_edited.py
+  |
+  ---- urss_final_code_script.py
+  |
+  ---- data.py
+  |
+  ----...
+- input
+  |
+  - ultrasound-nerve-segmentation
+   |
+   ---- train
+   |    |
+   |    ---- 1_1.tif
+   |    |
+   |    ---- …
+   |
+   ---- test
+        |
+        ---- 1.tif
+        |
+        ---- …
+```
+
+#### Requirements - update!!!:
+
+See kaggle/python docker image: https://github.com/kaggle/docker-python
+
+Minimal information:
+* Python >= 3.5
+* Keras 
+* Tensorflow backend for Keras
+
+
+#### Executing files:
+
+To run this code, you will need access to a GPU processing unit. I ran trained the model on Kaggle's GPU.
+
+Order of file execution:
+* data.py
+* metric.py
+* u_model_blocks.py
+* u_model.py
+* configuration.py
+* train.py
+* submission.py
+
+Alternatively execute one of:
+* urss_final_code_script.py
+* Edward_Tyantov_edited.py
+
+
+#### Configuration
+There are several versions of the U-net architecture you can try. If you just want to try it out, do not change anything in the configuration module (configuration.py on GitHub) and you will get the U-net kindly provided by Marko Jocič at the beginning of the competition.
+
+In case you want to experiment, I list the versions I tried here. To configure your version of the U-net you will need to meke a decision about all of the top le
+
+* Number of outputs
+    * One output
+    * Two outputs
+* Blocks for capturing information
+    * Convolution blocks
+    * Inception blocks
+         * inception block v1, versions a, b
+         * inception block v2, versions a, b, c
+         * inception block et, versions a, b
+* Skip connections from the down-path to the up-path of the U-net
+    * Standard connections from U-net original paper
+    * Residual connections mimicing ResNet skip connections
+
+### Running Edward Tyantov's code
+
+As a beginner, I found Marko Jocić's code and the instructions for running it accessible. So I did not document the code and will not publish it here. At the same time, I had a lot of problems with trying to make Edward Tyntov's code run correctly. This is why I made a concatenated, simplified, modified, and documented version of Edward Tyantov's original code:
+* Kaggle: https://www.kaggle.com/gbatchkala/edward-tyantov-edited-py
+* GitHub: https://github.com/GeorgeBatch/ultrasound-nerve-segmentation/blob/master/Edward_Tyantov_edited.py
+
+In both versions you can find the information about the changes, acknowledgements, and licence at the beginning of the python script.
+
+For GitHub version see LICENCE. If you find any mistakes or want to update the code to satisfy current kaggle environment, please submit your changes to the file via pull request to my GitHub repository.
