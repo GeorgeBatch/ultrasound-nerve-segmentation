@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/working/urss_final_code_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/urss_final_code_script.py" afterDir="false" />
-    </list>
+    <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,7 +151,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" visible="true" weight="0.32983682" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" weight="0.32983682" />
       <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32983682" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" weight="0.32983682" />
@@ -188,7 +183,8 @@
     <MESSAGE value="Modifications to inception_block_et()&#10;&#10;1) use version='a' instead of split=False&#10;2) use version='b' instead of split=True&#10;3) change default to version='b', aka split=True&#10;4) make appropriate updates to code&#10;5) make appropriate updates to docstring" />
     <MESSAGE value="Internal updates" />
     <MESSAGE value="Edward_Tyantov_edited.py&#10;1) correct a typo: publically -&gt; publicly&#10;&#10;urss_final_code_script.py&#10;1) add comment for actv in 3 inception blocks:&#10;   actv is a function, not a string, like activation&#10;2) add comment for act in get_unet_...:&#10;  in contrast to (1), there is is a string&#10;  &#10;internal workspace updates" />
-    <option name="LAST_COMMIT_MESSAGE" value="Edward_Tyantov_edited.py&#10;1) correct a typo: publically -&gt; publicly&#10;&#10;urss_final_code_script.py&#10;1) add comment for actv in 3 inception blocks:&#10;   actv is a function, not a string, like activation&#10;2) add comment for act in get_unet_...:&#10;  in contrast to (1), there is is a string&#10;  &#10;internal workspace updates" />
+    <MESSAGE value="internal workspace updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="internal workspace updates" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py" />
