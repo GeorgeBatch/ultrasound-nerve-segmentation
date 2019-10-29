@@ -317,7 +317,7 @@ from keras.layers.advanced_activations import ELU, LeakyReLU
 
 
 # ======================================================================================================================
-# Different blocks used for U-net
+# utility blocks needed for internal performance
 # ======================================================================================================================
 
 def NConv2D(filters, kernel_size, strides=(1, 1), padding='valid', activation='relu', kernel_initializer='glorot_uniform'):
@@ -334,7 +334,8 @@ def NConv2D(filters, kernel_size, strides=(1, 1), padding='valid', activation='r
     :param padding: one of 'valid' or 'same' (case-insensitive), 'valid' by default to have the same as Conv2D
     :param activation: specify the activation to be performed after BatchNormalization
     :param kernel_initializer: Initializer for the kernel weights matrix (see initializers in keras documentation)
-    :return: 2D Convolution function, followed by BatchNormalization across filters and ELU activation
+    :return: a function, combined of 2D Convolution, followed by BatchNormalization across filters,
+             and specified activation in that order
     """
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
@@ -347,6 +348,46 @@ def NConv2D(filters, kernel_size, strides=(1, 1), padding='valid', activation='r
 
     return f
 
+
+# needed for rblock (residual block)
+def _shortcut(_input, residual):
+    stride_width = _input._keras_shape[1] / residual._keras_shape[1]
+    stride_height = _input._keras_shape[2] / residual._keras_shape[2]
+    equal_channels = residual._keras_shape[3] == _input._keras_shape[3]
+
+    shortcut = _input
+    # 1 X 1 conv if shape is different. Else identity.
+    if stride_width > 1 or stride_height > 1 or not equal_channels:
+        shortcut = Conv2D(filters=residual._keras_shape[3], kernel_size=(1, 1),
+                          strides=(stride_width, stride_height),
+                          kernel_initializer="he_normal", padding="valid")(_input)
+
+    return add([shortcut, residual])
+
+
+def rblock(inputs, kernel_size, filters, scale=0.1):
+    """Create a scaled Residual block connecting the down-path and the up-path of the u-net architecture
+
+    Activations are scaled by a constant to prevent the network from dying. Usually is set between 0.1 and 0.3. See:
+    https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
+
+    :param inputs: Input 4D tensor (samples, rows, cols, channels)
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters)
+    :param kernel_size: An integer or tuple/list of 2 integers, specifying the height and width of the 2D convolution
+                        window. Can be a single integer to specify the same value for all spatial dimensions.
+    :param scale: scaling factor preventing the network from dying out
+    :return: 4D tensor (samples, rows, cols, channels) output of a residual block, given inputs
+    """
+    residual = Conv2D(filters=filters, kernel_size=kernel_size, padding='same')(inputs)
+    residual = BatchNormalization(axis=3)(residual)
+    residual = Lambda(lambda x: x * scale)(residual)
+    res = _shortcut(inputs, residual)
+    return ELU()(res)
+
+
+# ======================================================================================================================
+# different inception blocks
+# ======================================================================================================================
 
 def inception_block_v1(inputs, filters, version='b', activation='relu'):
     """Create a version of v1 inception block described in:
@@ -370,7 +411,7 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
     :param version: version of inception block, one of 'a', 'b' (case sensitive)
     :param activation: string, specifies activation function to use everywhere in the block
-    :return: output of the inception block, given inputs
+    :return: 4D tensor (samples, rows, cols, channels) output of an inception block, given inputs
     """
     assert filters % 16 == 0
     assert version in ['a', 'b']
@@ -434,7 +475,7 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
     :param version: version of inception block, one of 'a', 'b', 'c' (case sensitive)
     :param activation: string, specifies activation function to use everywhere in the block
-    :return: output of the inception block, given inputs
+    :return: 4D tensor (samples, rows, cols, channels) output of an inception block, given inputs
     """
     assert filters % 16 == 0
     assert version in ['a', 'b', 'c']
@@ -529,7 +570,7 @@ def inception_block_et(inputs, filters, version='b', activation='relu'):
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
     :param version: version of inception block
     :param activation: activation function to use everywhere in the block
-    :return: output of the inception block, given inputs
+    :return: 4D tensor (samples, rows, cols, channels) output of an inception block, given inputs
     """
     assert filters % 16 == 0
     assert version in ['a', 'b']
@@ -570,40 +611,41 @@ def inception_block_et(inputs, filters, version='b', activation='relu'):
     return result
 
 
-# needed for rblock (residual block)
-def _shortcut(_input, residual):
-    stride_width = _input._keras_shape[1] / residual._keras_shape[1]
-    stride_height = _input._keras_shape[2] / residual._keras_shape[2]
-    equal_channels = residual._keras_shape[3] == _input._keras_shape[3]
-
-    shortcut = _input
-    # 1 X 1 conv if shape is different. Else identity.
-    if stride_width > 1 or stride_height > 1 or not equal_channels:
-        shortcut = Conv2D(filters=residual._keras_shape[3], kernel_size=(1, 1),
-                          strides=(stride_width, stride_height),
-                          kernel_initializer="he_normal", padding="valid")(_input)
-
-    return add([shortcut, residual])
+# ======================================================================================================================
+# Combining blocks, allowing to use different blocks from before
+# ======================================================================================================================
 
 
-def rblock(inputs, kernel_size, filters, scale=0.1):
-    """Create a scaled Residual block connecting the down-path and the up-path of the u-net architecture
+def pooling_block(inputs, kernel_size=(3, 3), strides=(2, 2), padding='same', trainable=True, pool_size=(2, 2)):
+    """Function returning the output of one of the pooling blocks.
 
-    Activations are scaled by a constant to prevent the network from dying. Usually is set between 0.1 and 0.3. See:
-    https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
+    Allows not to make different versions of the u-net in terms of how pooling operation is performed:
+        1) trainable (default): through NConv2D custom function, see its documentation
+        2) non-trainable (alternative): through MaxPooling operation
 
-    :param inputs: Input 4D tensor (samples, rows, cols, channels)
-    :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters)
-    :param kernel_size: An integer or tuple/list of 2 integers, specifying the height and width of the 2D convolution
-                        window. Can be a single integer to specify the same value for all spatial dimensions.
-    :param scale: scaling factor preventing the network from dying out
-    :return: output of a residual block
+    To get the expected behaviour when changing 'trainable' assert strides == pool_size
+
+    :param inputs: 4D tensor (samples, rows, cols, channels)
+
+    :param kernel_size: NConv2D argument, kernel_size
+    :param strides:     NConv2D argument, strides
+    :param padding:     NConv2D argument, padding
+
+    :param trainable: boolean specifying the version of a pooling block with default behaviour
+        trainable=True: NConv2D(inputs._keras_shape[3], kernel_size=kernel_size, strides=strides, padding=padding)(inputs)
+        trainable=False: MaxPooling2D(pool_size=pool_size)(inputs)
+
+    :param pool_size: MaxPooling2D argument, pool_size
+
+    :return: 4D tensor (samples, rows, cols, channels) output of a pooling block
     """
-    residual = Conv2D(filters=filters, kernel_size=kernel_size, padding='same')(inputs)
-    residual = BatchNormalization(axis=3)(residual)
-    residual = Lambda(lambda x: x * scale)(residual)
-    res = _shortcut(inputs, residual)
-    return ELU()(res)
+    assert trainable in [True, False]
+
+    if trainable:
+        return NConv2D(inputs._keras_shape[3], kernel_size=kernel_size, strides=strides, padding=padding)(inputs)
+    if not trainable:
+        return MaxPooling2D(pool_size=pool_size)(inputs)
+
 
 
 ########################################################################################################################
