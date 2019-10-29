@@ -66,7 +66,7 @@ I also found the article which (in my opinion) very well summarises and explains
 
 ## Acknowledgements
 
-Due to the lack of practical experience, I based my project on the code written by Marko Jocić (MJ) and Edward Tyantov (ET).
+Due to the lack of practical experience, I based my project on the code written by Marko Jocić and Edward Tyantov.
 
 **Marko Jocić's work:** [Kaggle][MJ's Kaggle], [GitHub][MJ's GitHub]
 
