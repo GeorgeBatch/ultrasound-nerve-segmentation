@@ -304,6 +304,79 @@ if __name__ == '__main__':
 
 ########################################################################################################################
 # ======================================================================================================================
+# check_pars
+# ======================================================================================================================
+########################################################################################################################
+
+def check_dict_subset(subset, superset):
+    print("superset keys:", superset.keys())
+    print("subset keys:", subset.keys())
+    assert all(item in superset.keys() for item in subset.keys())
+    print("Subset keys is a subset of superset keys", all(item in superset.keys() for item in subset.keys()))
+    for key in subset.keys():
+        print("superset key items:", superset[key])
+        print("subset key items:", subset[key])
+        if type(superset[key]) == dict:
+            assert type(subset[key]) == type(superset[key])
+            check_dict_subset(subset[key], superset[key])
+        elif type(superset[key]) == list:
+            assert subset[key] in superset[key]
+            print("subset[key] item:", subset[key], " is in superset[key] items:", superset[key])
+        else:
+            return type(superset[key]), superset[key], "something went wrong"
+
+    return 'Your parameter choice is valid'
+
+
+ALLOWED_PARS = {
+    'outputs': [1, 2],
+    'pooling_block': {
+        'trainable': [True, False]},
+    'information_block': {
+        'inception': {
+            'v1': ['a', 'b'],
+            'v2': ['a', 'b', 'c'],
+            'et': ['a', 'b']},
+        'convolution': ['simple', 'normalized', 'normalized_dropout']},
+    'connection_block': ['simple', 'residual']
+}
+
+
+########################################################################################################################
+# ======================================================================================================================
+# configuration
+# ======================================================================================================================
+########################################################################################################################
+
+# standard-module imports
+import numpy as np
+from keras.layers import Input, add, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Dense
+from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
+from keras.layers.advanced_activations import ELU, LeakyReLU
+from keras.models import Model
+from keras.optimizers import Adam
+
+# import u_model_blocks
+# import u_model
+# import check_pars
+
+print(ALLOWED_PARS)
+
+# DO NOT CHANGE THE NAME, you can change the parameters
+# look up the format of available parameters in check_pars.py
+PARS = {
+    'outputs': 2,
+    'pooling_block': {'trainable': True},
+    'information_block': {'inception': {'v2': 'b'}},
+    'connection_block': 'residual'
+}
+
+# DO NOT REMOVE THIS LINE, it checks if the parameter choice is valid
+check_dict_subset(PARS, ALLOWED_PARS)
+
+
+########################################################################################################################
+# ======================================================================================================================
 # u_model_blocks
 # ======================================================================================================================
 ########################################################################################################################
@@ -389,11 +462,18 @@ def rblock(inputs, kernel_size, filters, scale=0.1):
 # different information blocks
 # ======================================================================================================================
 
-def convolution_block(inputs, filters, kernel_size, strides=(1, 1), activation='relu'):
+def convolution_block(inputs, filters, kernel_size, strides=(1, 1), activation='relu', version='normalized', pars=PARS):
+
+    # setting the version
+    if pars.get('information_block').get('inception').get('v1') is None:
+        version = version
+    else:
+        version = pars.get('information_block').get('convolution').get('normalized')
+
     return 0
 
 
-def inception_block_v1(inputs, filters, version='b', activation='relu'):
+def inception_block_v1(inputs, filters, activation='relu', version='b', pars=PARS):
     """Create a version of v1 inception block described in:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
@@ -413,14 +493,22 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
-    :param version: version of inception block, one of 'a', 'b' (case sensitive)
     :param activation: string, specifies activation function to use everywhere in the block
+    :param version: version of inception block, one of 'a', 'b' (case sensitive)
+    :param pars: dictionary of parameters passed to u-net, determines the version, if this type of block is chosen
     :return: 4D tensor (samples, rows, cols, channels) output of an inception block, given inputs
     """
+
     assert filters % 16 == 0
     assert version in ['a', 'b']
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
+
+    # setting the version
+    if pars.get('information_block').get('inception').get('v1') is None:
+        version = version
+    else:
+        version = pars.get('information_block').get('inception').get('v1')
 
     # vertical 1
     if version == 'a':
@@ -456,7 +544,7 @@ def inception_block_v1(inputs, filters, version='b', activation='relu'):
     return result
 
 
-def inception_block_v2(inputs, filters, version='b', activation='relu'):
+def inception_block_v2(inputs, filters, activation='relu', version='b', pars=PARS):
     """Create a version of v1 inception block described in:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
@@ -477,14 +565,21 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
-    :param version: version of inception block, one of 'a', 'b', 'c' (case sensitive)
     :param activation: string, specifies activation function to use everywhere in the block
+    :param version: version of inception block, one of 'a', 'b', 'c' (case sensitive)
+    :param pars: dictionary of parameters passed to u-net, determines the version, if this type of block is chosen
     :return: 4D tensor (samples, rows, cols, channels) output of an inception block, given inputs
     """
     assert filters % 16 == 0
     assert version in ['a', 'b', 'c']
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
+
+    # setting the version
+    if pars.get('information_block').get('inception').get('v2') is None:
+        version = version
+    else:
+        version = pars.get('information_block').get('inception').get('v2')
 
     # vertical 1
     c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same',
@@ -538,7 +633,7 @@ def inception_block_v2(inputs, filters, version='b', activation='relu'):
     return result
 
 
-def inception_block_et(inputs, filters, version='b', activation='relu'):
+def inception_block_et(inputs, filters, activation='relu', version='b', pars=PARS):
     """Create an inception block with 2 options.
     For intuition read, parts v1 and v2:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
@@ -572,14 +667,21 @@ def inception_block_et(inputs, filters, version='b', activation='relu'):
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
-    :param version: version of inception block
     :param activation: activation function to use everywhere in the block
+    :param version: version of inception block
+    :param pars: dictionary of parameters passed to u-net, determines the version, if this type of block is chosen
     :return: 4D tensor (samples, rows, cols, channels) output of an inception block, given inputs
     """
     assert filters % 16 == 0
     assert version in ['a', 'b']
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
+
+    # setting the version
+    if pars.get('information_block').get('inception').get('et') is None:
+        version = version
+    else:
+        version = pars.get('information_block').get('inception').get('et')
 
     # vertical 1
     c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same',
@@ -619,8 +721,8 @@ def inception_block_et(inputs, filters, version='b', activation='relu'):
 # Combining blocks, allowing to use different blocks from before
 # ======================================================================================================================
 
-
-def pooling_block(inputs, c_kernel_size=(3, 3), c_strides=(2, 2), padding='same', trainable=True, p_pool_size=(2, 2)):
+def pooling_block(inputs, c_kernel_size=(3, 3), c_strides=(2, 2), padding='same', p_pool_size=(2, 2),
+                  trainable=True, pars=PARS):
     """Function returning the output of one of the pooling blocks.
 
     Allows not to make different versions of the u-net in terms of how pooling operation is performed:
@@ -629,28 +731,34 @@ def pooling_block(inputs, c_kernel_size=(3, 3), c_strides=(2, 2), padding='same'
 
     To get the expected behaviour when changing 'trainable' assert strides == pool_size
 
-    :param inputs: 4D tensor (samples, rows, cols, channels)
+    Parameters starting with p_ are only to be used for (trainable=False) MaxPooling2D
+    Parameters starting with c_ are only to be used for (trainable=True) MaxPooling2D
 
+    :param inputs: 4D tensor (samples, rows, cols, channels)
     :param c_kernel_size: NConv2D argument, kernel_size
     :param c_strides:     NConv2D argument, strides
-
     :param padding:     NConv2D/MaxPooling2D argument, padding
+    :param p_pool_size: MaxPooling2D argument, pool_size
 
     :param trainable: boolean specifying the version of a pooling block with default behaviour
         trainable=True: NConv2D(inputs._keras_shape[3], kernel_size=kernel_size, strides=strides, padding=padding)(inputs)
         trainable=False: MaxPooling2D(pool_size=pool_size)(inputs)
-
-    :param p_pool_size: MaxPooling2D argument, pool_size
+    :param pars: :param pars: dictionary of parameters passed to u-net, determines the version of the block
 
     :return: 4D tensor (samples, rows, cols, channels) output of a pooling block
     """
     assert trainable in [True, False]
 
+    # setting the version
+    if pars.get('pooling_block').get('trainable') is None:
+        trainable = trainable
+    else:
+        trainable = pars.get('pooling_block').get('trainable')
+
     if trainable:
         return NConv2D(inputs._keras_shape[3], kernel_size=c_kernel_size, strides=c_strides, padding=padding)(inputs)
     if not trainable:
         return MaxPooling2D(pool_size=p_pool_size, padding=padding)(inputs)
-
 
 
 ########################################################################################################################
@@ -676,6 +784,127 @@ from keras.optimizers import Adam
 IMG_ROWS, IMG_COLS = 80, 112
 K.set_image_data_format('channels_last')  # (number of images, rows per image, cols per image, channels)
 
+
+# ======================================================================================================================
+# U-net with Inception blocks, Normalised 2D Convolutions instead of Maxpooling
+# ======================================================================================================================
+
+def get_unet_(optimizer, pars=PARS):
+    """
+    Creating and compiling the U-net
+
+    This version is fully customisable by choosing pars argument
+
+    :param optimizer: specifies the optimiser for the u-net, e.g. Adam, RMSProp, etc.
+    :param pars: parameters passed to customise the U-net
+    :return: compiled u-net, Keras.Model object
+    """
+
+    # activation for inception blocks
+    act = 'elu'
+
+    # input
+    inputs = Input((IMG_ROWS, IMG_COLS, 1), name='main_input')
+    print("inputs:", inputs._keras_shape)
+
+    #
+    # down the U-net
+    #
+
+    conv1 = inception_block(inputs, 32, activation=act)
+    print("conv1", conv1._keras_shape)
+    pool1 = NConv2D(32, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv1)
+    print("pool1", pool1._keras_shape)
+    pool1 = Dropout(0.5)(pool1)
+    print("pool1", pool1._keras_shape)
+
+    conv2 = inception_block(pool1, 64, activation=act)
+    print("conv2", conv2._keras_shape)
+    pool2 = NConv2D(64, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv2)
+    print("pool2", pool2._keras_shape)
+    pool2 = Dropout(0.5)(pool2)
+    print("pool2", pool2._keras_shape)
+
+    conv3 = inception_block(pool2, 128, activation=act)
+    print("conv3", conv3._keras_shape)
+    pool3 = NConv2D(128, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv3)
+    print("pool3", pool3._keras_shape)
+    pool3 = Dropout(0.5)(pool3)
+    print("pool3", pool3._keras_shape)
+
+    conv4 = inception_block(pool3, 256, activation=act)
+    print("conv4", conv4._keras_shape)
+    pool4 = NConv2D(256, kernel_size=(3, 3), strides=(2, 2), padding='same')(conv4)
+    print("pool4", pool4._keras_shape)
+    pool4 = Dropout(0.5)(pool4)
+    print("pool4", pool4._keras_shape)
+
+    #
+    # bottom level of the U-net
+    #
+    conv5 = inception_block(pool4, 512, activation=act)
+    print("conv5", conv5._keras_shape)
+    conv5 = Dropout(0.5)(conv5)
+    print("conv5", conv5._keras_shape)
+
+    #
+    # auxiliary output for predicting probability of nerve presence
+    #
+    pre = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid')(conv5)
+    pre = Flatten()(pre)
+    aux_out = Dense(1, activation='sigmoid', name='aux_output')(pre)
+
+    #
+    # up the U-net
+    #
+
+    after_conv4 = rblock(conv4, 1, 256)
+    print("after_conv4", after_conv4._keras_shape)
+    up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), after_conv4], axis=3)
+    conv6 = inception_block(up6, 256, activation=act)
+    print("conv6", conv6._keras_shape)
+    conv6 = Dropout(0.5)(conv6)
+    print("conv6", conv6._keras_shape)
+
+    after_conv3 = rblock(conv3, 1, 128)
+    print("after_conv3", after_conv3._keras_shape)
+    up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), after_conv3], axis=3)
+    conv7 = inception_block(up7, 128, activation=act)
+    print("conv7", conv7._keras_shape)
+    conv7 = Dropout(0.5)(conv7)
+    print("conv7", conv7._keras_shape)
+
+    after_conv2 = rblock(conv2, 1, 64)
+    print("after_conv2", after_conv2._keras_shape)
+    up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), after_conv2], axis=3)
+    conv8 = inception_block(up8, 64, activation=act)
+    print("conv8", conv8._keras_shape)
+    conv8 = Dropout(0.5)(conv8)
+    print("conv8", conv8._keras_shape)
+
+    after_conv1 = rblock(conv1, 1, 32)
+    print("after_conv1", after_conv1._keras_shape)
+    up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), after_conv1], axis=3)
+    conv9 = inception_block(up9, 32, activation=act)
+    print("conv9", conv9._keras_shape)
+    conv9 = Dropout(0.5)(conv9)
+    print("conv9", conv9._keras_shape)
+
+    # main output
+    conv10 = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid', name='main_output')(
+        conv9)
+    print("conv10", conv10._keras_shape)
+
+    # creating a model
+    model = Model(inputs=inputs, outputs=[conv10, aux_out])
+
+    # compiling the model
+    model.compile(optimizer=optimizer,
+                  loss={'main_output': dice_coef_loss, 'aux_output': 'binary_crossentropy'},
+                  metrics={'main_output': dice_coef, 'aux_output': 'acc'},
+                  loss_weights={'main_output': 1., 'aux_output': 0.5})
+
+    return model
 
 # ======================================================================================================================
 # U-net with Inception blocks, MaxPooling2D
@@ -933,46 +1162,14 @@ def get_unet_inception_2head_nconv2d(optimizer):
     return model
 
 
-########################################################################################################################
-# ======================================================================================================================
-# configuration
-# ======================================================================================================================
-########################################################################################################################
-
-# standard-module imports
-import numpy as np
-from keras.layers import Input, add, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Dense
-from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
-from keras.layers.advanced_activations import ELU, LeakyReLU
-from keras.models import Model
-from keras.optimizers import Adam
-
-# import u_model_blocks
-# import u_model
-
-u_net_allowed_parameters = {
-    'optimizer': [Adam(lr=1e-5), Adam(lr=0.0045)],
-    'outputs': [1, 2],
-    'trainable_pooling': [True, False],
-    'information_block': {
-        'inception': {
-            'v1': ['a', 'b'],
-            'v2': ['a', 'b', 'c'],
-            'et': ['a', 'b']},
-        'convolution': ['simple', 'normalized', 'normalized_dropout']},
-    'connection_block': ['simple', 'residual']
-}
-
+# ----------------------------------------------------------------------------------------------------------------------
 
 # get_unet() allows to try other versions of the u-net, if more are specified
-get_unet = get_unet_inception_2head_nconv2d
+get_unet = get_unet_inception_2head_maxpooling2d
 
 # inception_block() allows to try other versions of the inception blocks
 inception_block = inception_block_v2
 
-
-
-# ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     # test the u-net without training
 
