@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9c543fa2-0953-4841-ba10-1fdd98b20fb2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path=".idea/" />
@@ -13,11 +12,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="61">
-              <caret line="813" column="111" lean-forward="true" selection-start-line="813" selection-start-column="111" selection-end-line="813" selection-end-column="111" />
+            <state relative-caret-position="265">
+              <caret line="412" lean-forward="true" selection-start-line="412" selection-end-line="412" />
               <folding>
                 <element signature="e#944#953#0" expanded="true" />
               </folding>
@@ -25,16 +24,31 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+            <state relative-caret-position="15">
+              <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>dilated_convolution_block</find>
+      <find>inception_block_v1</find>
+      <find>convolution_block</find>
+      <find>inception_block</find>
+      <find>information_block</find>
+      <find>get_unet</find>
+      <find>ALLOWED</find>
+      <find>PARS</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>allowed</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -43,6 +57,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/working/urss_final_code_script.py" />
       </list>
     </option>
   </component>
@@ -58,6 +73,11 @@
             <path>
               <item name="ultrasound-nerve-segmentation" type="b2602c69:ProjectViewProjectNode" />
               <item name="ultrasound-nerve-segmentation" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ultrasound-nerve-segmentation" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ultrasound-nerve-segmentation" type="462c0819:PsiDirectoryNode" />
+              <item name="working" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -89,7 +109,7 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20886981" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20886981" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Messages" weight="0.32983682" />
@@ -100,11 +120,11 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" visible="true" weight="0.32867134" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" weight="0.32867134" />
       <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32983682" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.32983682" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" weight="0.32983682" />
-      <window_info anchor="bottom" id="Python Console" order="11" weight="0.32891566" />
+      <window_info anchor="bottom" id="Python Console" order="11" weight="0.32867134" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -130,23 +150,26 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="1) Change pars=PARS, allowed_pars=ALLOWED_PARS&#10;   to pars={}, allowed_pars={} in all blocks so the functions can be&#10;   used without specifying them&#10;2) apdate all pooling blocks in the unet to include pars=PARS" />
-    <option name="LAST_COMMIT_MESSAGE" value="1) Change pars=PARS, allowed_pars=ALLOWED_PARS&#10;   to pars={}, allowed_pars={} in all blocks so the functions can be&#10;   used without specifying them&#10;2) apdate all pooling blocks in the unet to include pars=PARS" />
+    <MESSAGE value="add workspace.xml to ignored files" />
+    <MESSAGE value="delete workspace.xml from gitignore" />
+    <MESSAGE value="1) add padding argument to&#10;   convolution_block() and dilated_convolution_block()&#10;   =&gt; update get_unet_customised() accordingly&#10;2) write up information_block()&#10;3) add allowed_pars to get_unet_customised()&#10;4) substitute inception blocks for information blocks&#10;   inside get_unet_customised()" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) add padding argument to&#10;   convolution_block() and dilated_convolution_block()&#10;   =&gt; update get_unet_customised() accordingly&#10;2) write up information_block()&#10;3) add allowed_pars to get_unet_customised()&#10;4) substitute inception blocks for information blocks&#10;   inside get_unet_customised()" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="61">
-          <caret line="813" column="111" lean-forward="true" selection-start-line="813" selection-start-column="111" selection-end-line="813" selection-end-column="111" />
-          <folding>
-            <element signature="e#944#953#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="15">
+          <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        <state relative-caret-position="265">
+          <caret line="412" lean-forward="true" selection-start-line="412" selection-end-line="412" />
+          <folding>
+            <element signature="e#944#953#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
