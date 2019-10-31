@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="06ef400f-74ff-45a8-8eb5-cdb547b3fa47" name="Default Changelist" comment="">
+    <list default="true" id="9c543fa2-0953-4841-ba10-1fdd98b20fb2" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Untitled-checkpoint.ipynb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/working/urss_final_code_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/urss_final_code_script.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <ignored path=".idea/" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,87 +18,16 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="638" column="18" selection-start-line="638" selection-start-column="18" selection-end-line="638" selection-end-column="18" />
+            <state relative-caret-position="61">
+              <caret line="813" column="111" lean-forward="true" selection-start-line="813" selection-start-column="111" selection-end-line="813" selection-end-column="111" />
+              <folding>
+                <element signature="e#944#953#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>os</find>
-      <find>prepro</find>
-      <find>padding</find>
-      <find>split=</find>
-      <find>split</find>
-      <find>np</find>
-      <find>np.</find>
-      <find>Model</find>
-      <find>Adam</find>
-      <find>dice_coef</find>
-      <find>add</find>
-      <find>Input</find>
-      <find>concatenate</find>
-      <find>MaxPooling2D</find>
-      <find>UpSampling2D</find>
-      <find>Dense</find>
-      <find>BatchNormalization</find>
-      <find>u_model_blocks</find>
-      <find>NConv2D</find>
-      <find>lambda</find>
-      <find>actv</find>
-      <find>Jocič</find>
-      <find>K.</find>
-      <find>one of</find>
-      <find>3_</find>
-      <find>c1</find>
-      <find>inception_block_v2</find>
-      <find>Conv2D</find>
-      <find>&quot;</find>
-      <find>c3</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>split</replace>
-      <replace>Jocić</replace>
-      <replace>1_</replace>
-      <replace>c4</replace>
-      <replace>padding='same', activation=activation</replace>
-      <replace>'</replace>
-      <replace>c1</replace>
-    </replaceStrings>
-  </component>
-  <component name="Git.Settings">
-    <option name="PREVIOUS_COMMIT_AUTHORS">
-      <list>
-        <option value="George Batchkala &lt;george.batchkala@gmail.com&gt;" />
-      </list>
-    </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/Edward_Tyantow_edited.py" />
-        <option value="$USER_HOME$/Downloads/urss-all-code.py" />
-        <option value="$PROJECT_DIR$/Edward_Tyantov_edited.py" />
-        <option value="$PROJECT_DIR$/urss_final_code_script.py" />
-        <option value="$PROJECT_DIR$/working/Edward_Tyantov_edited.py" />
-        <option value="$PROJECT_DIR$/working/urss_final_code_script.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="1440" />
-    <option name="height" value="900" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -120,11 +51,12 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -143,9 +75,12 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19170243" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20886981" />
       <window_info id="Structure" order="1" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" weight="0.32983682" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32983682" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -153,11 +88,11 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" visible="true" weight="0.32983682" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49928468" visible="true" weight="0.32867134" />
       <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32983682" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" weight="0.32983682" />
-      <window_info anchor="bottom" id="Python Console" order="11" weight="0.32983682" />
+      <window_info anchor="bottom" id="Python Console" order="11" weight="0.32891566" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -165,72 +100,24 @@
       <window_info anchor="right" id="R Packages" order="4" />
     </layout>
   </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Create functions from static methods get_object_existance() and __pretrain_model_load(). They were inside the class, but did not need an instance of the class.&#10;&#10;Improve spelling.&#10;&#10;Improve spacing." />
-    <MESSAGE value="Correct the author's name.&#10;&#10;Add acknowledgements, license, and future use notes." />
-    <MESSAGE value="Change the LICENCE to include all names of the contributors." />
-    <MESSAGE value="Add the link to MJ's github" />
-    <MESSAGE value=".idea configurations" />
-    <MESSAGE value="workspace update" />
-    <MESSAGE value="Update urss_final_code_script.py:&#10;1) add documentation to the rest of the functions&#10;2) delete redundant imports and variable assignments in train module&#10;3) delete redundant line of load_test_ids() from train_and_predict()&#10;&#10;Update Edward_Tyantov_edited.py:&#10;1) from keras import backend as K # in metrics module&#10;&#10;Add some words to project dictionary, e.g. keras, preprocess, urss, etc." />
-    <MESSAGE value="Style updates:&#10;1) use hashtag lines to highlight the module boundaries&#10;2) rename the sections according to future file names, e.g. Data -&gt; data&#10;   because the module is named data.py&#10;3) make comments fit 80-characters limit&#10;&#10;&#10;Code updates:&#10;1) create a block of code where the choice of architecture will be made&#10;2) make 2 get_unet_... functions: with NConv2D and with MaxPooling&#10;3) update docstrings for these 2 functions&#10;4) delete commented lines of code&#10;5) edit some minor comments within the 2 functions" />
-    <MESSAGE value="Style updates:&#10;1) add set up stage to data module&#10;2) add more separators, e.g. # ------" />
-    <MESSAGE value="Code updates:&#10;1) split u_model into u_model_blocks and u_model&#10;2) split and duplicate imports&#10;3) in u_model: import u_model_blocks&#10;&#10;4) split inception_block() into inception_block_v1b() and&#10;   inception_block_v2()&#10;5) remove split argument everywhere for the inception_block() &#10;&#10;6) add configuration module, where get_unet and inception_block&#10;   are specified" />
-    <MESSAGE value="update a comment:&#10;# tensorflow backend -&gt; # using tensorflow backend" />
-    <MESSAGE value="Code updates:&#10;1) add kernel_initializer argument to NConv2D() so it can be used in&#10;   inception blocks&#10;2) Delete old versions of inception blocks&#10;3) Write up 2 new functions:&#10;   inception_block_v1() with new parameter version in ['a', 'b'], and&#10;   inception_block_v2() with new parameter version in ['a', 'b', 'c']&#10;   as in https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202" />
-    <MESSAGE value="Code changes:&#10;1) Change default argument of NConv2D() to padding='valid' to coincide&#10;   with Conv2D() arguments&#10;2) Add padding='same' to all NConv2D()&#10;3) Remove activation=activation from Conv2D(), it should not be there:&#10;   In inception block's verticals before concatenation the last&#10;   convolution should not be activated since they well be normalized&#10;   and activated after concatenation" />
-    <MESSAGE value="Changes made to inception_block_v1(), inception_block_v2()&#10;1) Add more docstring info&#10;2) Swap everywhere:&#10;   the combination of Conv2D() and further activation&#10;   -&gt; Conv2D(activation=activation)&#10;3) Use Nconv2D() in middle layers of inception_block_v2():&#10;   vertical 1, versions b and c" />
-    <MESSAGE value="Update documentation to inception_block()" />
-    <MESSAGE value="Adding inception_block_et() - modified version of Edward Tyantov's&#10;        inception_block() function&#10;&#10;Modifications made: (should work in exactly the same way)&#10;&#10;        swap: Conv2D -&gt; BatchNormalization -&gt; activation&#10;        to:   NConv2D blocks. See NConv2D documentation for them.&#10;&#10;        swap: Conv2D -&gt; activation&#10;        to:   Conv2D -&gt; Conv2D(activation=activation)&#10;&#10;        change the order of the verticals to coincide with v2_paper notation&#10;&#10;        change names of the outputs of the block verticals to c1, c2, c3, c4&#10;&#10;        use 'rusult' instead of 'res' to avoid confusion with residuals" />
-    <MESSAGE value="Modifications to inception_block_et()&#10;&#10;1) use version='a' instead of split=False&#10;2) use version='b' instead of split=True&#10;3) change default to version='b', aka split=True&#10;4) make appropriate updates to code&#10;5) make appropriate updates to docstring" />
-    <MESSAGE value="Internal updates" />
-    <MESSAGE value="Edward_Tyantov_edited.py&#10;1) correct a typo: publically -&gt; publicly&#10;&#10;urss_final_code_script.py&#10;1) add comment for actv in 3 inception blocks:&#10;   actv is a function, not a string, like activation&#10;2) add comment for act in get_unet_...:&#10;  in contrast to (1), there is is a string&#10;  &#10;internal workspace updates" />
-    <MESSAGE value="internal workspace updates" />
-    <MESSAGE value="Code:&#10;1) add pooling_block() allowing to switch between MaxPooling2D()&#10;   and NConv2D() by setting a boolean parameter 'trainable'&#10;&#10;Comments and documentation:&#10;1) update docstring for NConv2D()&#10;2) split u_mode_blocks into several parts (still stays as the same module)&#10;3) add documentation for pooling_block()" />
-    <MESSAGE value="Code:&#10;1) create a dictionary of allowed parameters for the u-net&#10;2) create a convolution_block function - no implementation yet&#10;   (need more thought)&#10;3) update parameter names of pooling block" />
-    <option name="LAST_COMMIT_MESSAGE" value="Code:&#10;1) create a dictionary of allowed parameters for the u-net&#10;2) create a convolution_block function - no implementation yet&#10;   (need more thought)&#10;3) update parameter names of pooling block" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Edward_Tyantow_edited.py" />
-    <entry file="file://$PROJECT_DIR$/LICENSE.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor />
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/acknowledgements/Marko Jocic/jocicmarko:ultrasound-nerve-segmentation- Deep Learning Tutorial for Kaggle Ultrasound Nerve Segmentation competition, using Keras.webloc">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/Downloads/urss-all-code.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="38" column="32" selection-start-line="38" selection-start-column="32" selection-end-line="38" selection-end-column="32" />
-          <folding>
-            <element signature="e#232#269#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Edward_Tyantov_edited.py" />
-    <entry file="file://$PROJECT_DIR$/urss_final_code_script.py" />
-    <entry file="file://$PROJECT_DIR$/working/Edward_Tyantov_edited.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-184">
-          <caret line="29" column="53" selection-start-line="29" selection-start-column="53" selection-end-line="29" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="638" column="18" selection-start-line="638" selection-start-column="18" selection-end-line="638" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="1) Change pars=PARS, allowed_pars=ALLOWED_PARS&#10;   to pars={}, allowed_pars={} in all blocks so the functions can be&#10;   used without specifying them&#10;2) apdate all pooling blocks in the unet to include pars=PARS" />
+    <option name="LAST_COMMIT_MESSAGE" value="1) Change pars=PARS, allowed_pars=ALLOWED_PARS&#10;   to pars={}, allowed_pars={} in all blocks so the functions can be&#10;   used without specifying them&#10;2) apdate all pooling blocks in the unet to include pars=PARS" />
   </component>
 </project>

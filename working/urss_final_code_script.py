@@ -485,7 +485,7 @@ def rblock(inputs, kernel_size, filters, scale=0.1):
 # ======================================================================================================================
 
 def convolution_block(inputs, filters, kernel_size=(3, 3), activation=None,
-                      version='normalized', pars=PARS, allowed_pars=ALLOWED_PARS):
+                      version='normalized', pars={}, allowed_pars={}):
     """Create a version of a convolution block.
 
     Versions: with and without batch-normalization after convolutions.
@@ -501,9 +501,10 @@ def convolution_block(inputs, filters, kernel_size=(3, 3), activation=None,
     :return: 4D tensor (samples, rows, cols, channels) output of a convolution block, given inputs
     """
     # checking that the allowed version names did not change in ALLOWED_PARS
-    assert allowed_pars.get('information_block').get('convolution').get('simple') == ['not_normalized', 'normalized']
+    if allowed_pars != {}:
+        assert allowed_pars.get('information_block').get('convolution').get('simple') == ['not_normalized', 'normalized']
     # keep version argument if need to use without PARS
-    assert version in allowed_pars.get('information_block').get('convolution').get('simple')
+    assert version in ['not_normalized', 'normalized']
 
     # setting the version
     if pars.get('information_block').get('convolution').get('simple') is None:
@@ -520,7 +521,7 @@ def convolution_block(inputs, filters, kernel_size=(3, 3), activation=None,
 
 
 def dilated_convolution_block(inputs, filters, kernel_size=(3, 3), activation=None,
-                              version='normalized', pars=PARS, allowed_pars=ALLOWED_PARS):
+                              version='normalized', pars={}, allowed_pars={}):
     """Create a version of a dilated-convolution block.
 
     Versions: with and without batch-normalization after dilated convolutions.
@@ -539,9 +540,10 @@ def dilated_convolution_block(inputs, filters, kernel_size=(3, 3), activation=No
     :return: 4D tensor (samples, rows, cols, channels) output of a dilated-convolution block, given inputs
     """
     # checking that the allowed version names did not change in ALLOWED_PARS
-    assert allowed_pars.get('information_block').get('convolution').get('dilated') == ['not_normalized', 'normalized']
+    if allowed_pars != {}:
+        assert allowed_pars.get('information_block').get('convolution').get('dilated') == ['not_normalized', 'normalized']
     # keep version argument if need to use without PARS
-    assert version in allowed_pars.get('information_block').get('convolution').get('dilated')
+    assert version in ['not_normalized', 'normalized']
 
     # setting the version
     if pars.get('information_block').get('convolution') is None:
@@ -561,7 +563,7 @@ def dilated_convolution_block(inputs, filters, kernel_size=(3, 3), activation=No
                       activation=activation, padding="same")(conv1)
 
 
-def inception_block_v1(inputs, filters, activation=None, version='b', pars=PARS, allowed_pars=ALLOWED_PARS):
+def inception_block_v1(inputs, filters, activation=None, version='b', pars={}, allowed_pars={}):
     """Create a version of v1 inception block described in:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
@@ -590,9 +592,10 @@ def inception_block_v1(inputs, filters, activation=None, version='b', pars=PARS,
 
     assert filters % 16 == 0
     # checking that the allowed version names did not change in ALLOWED_PARS
-    assert allowed_pars.get('information_block').get('inception').get('v1') == ['a', 'b']
+    if allowed_pars != {}:
+        assert allowed_pars.get('information_block').get('inception').get('v1') == ['a', 'b']
     # keep version argument if need to use without PARS
-    assert version in allowed_pars.get('information_block').get('inception').get('v1')
+    assert version in ['a', 'b']
 
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
@@ -605,7 +608,7 @@ def inception_block_v1(inputs, filters, activation=None, version='b', pars=PARS,
     # vertical 1
     if version == 'a':
         c1 = Conv2D(filters=filters // 8, kernel_size=(5, 5), padding='same', kernel_initializer='he_normal')(inputs)
-    if version == 'b':
+    else:
         c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same',
                       activation=activation, kernel_initializer='he_normal')(inputs)
         c1 = Conv2D(filters=filters // 8, kernel_size=(5, 5), padding='same', kernel_initializer='he_normal')(c1_1)
@@ -613,7 +616,7 @@ def inception_block_v1(inputs, filters, activation=None, version='b', pars=PARS,
     # vertical 2
     if version == 'a':
         c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), padding='same', kernel_initializer='he_normal')(inputs)
-    if version == 'b':
+    else:
         c2_1 = Conv2D(filters=filters // 8 * 3, kernel_size=(1, 1), padding='same',
                       activation=activation, kernel_initializer='he_normal')(inputs)
         c2 = Conv2D(filters=filters // 2, kernel_size=(3, 3), padding='same', kernel_initializer='he_normal')(c2_1)
@@ -636,7 +639,7 @@ def inception_block_v1(inputs, filters, activation=None, version='b', pars=PARS,
     return result
 
 
-def inception_block_v2(inputs, filters, activation=None, version='b', pars=PARS, allowed_pars=ALLOWED_PARS):
+def inception_block_v2(inputs, filters, activation=None, version='b', pars={}, allowed_pars={}):
     """Create a version of v1 inception block described in:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 
@@ -665,9 +668,10 @@ def inception_block_v2(inputs, filters, activation=None, version='b', pars=PARS,
     """
     assert filters % 16 == 0
     # checking that the allowed version names did not change in ALLOWED_PARS
-    assert allowed_pars.get('information_block').get('inception').get('v2') == ['a', 'b', 'c']
+    if allowed_pars != {}:
+        assert allowed_pars.get('information_block').get('inception').get('v2') == ['a', 'b', 'c']
     # keep version argument if need to use without PARS
-    assert version in allowed_pars.get('information_block').get('inception').get('v2')
+    assert version in ['a', 'b', 'c']
 
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
@@ -729,7 +733,7 @@ def inception_block_v2(inputs, filters, activation=None, version='b', pars=PARS,
     return result
 
 
-def inception_block_et(inputs, filters, activation='relu', version='b', pars=PARS, allowed_pars=ALLOWED_PARS):
+def inception_block_et(inputs, filters, activation='relu', version='b', pars={}, allowed_pars={}):
     """Create an inception block with 2 options.
     For intuition read, parts v1 and v2:
     https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
@@ -772,9 +776,10 @@ def inception_block_et(inputs, filters, activation='relu', version='b', pars=PAR
     """
     assert filters % 16 == 0
     # checking that the allowed version names did not change in ALLOWED_PARS
-    assert allowed_pars.get('information_block').get('inception').get('et') == ['a', 'b']
+    if allowed_pars != {}:
+        assert allowed_pars.get('information_block').get('inception').get('et') == ['a', 'b']
     # keep version argument if need to use without PARS
-    assert version in allowed_pars.get('information_block').get('inception').get('et')
+    assert version in ['a', 'b']
 
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
@@ -823,7 +828,7 @@ def inception_block_et(inputs, filters, activation='relu', version='b', pars=PAR
 # ======================================================================================================================
 
 def pooling_block(inputs, filters, kernel_size=(3, 3), strides=(2, 2), padding='same', activation=None,
-                  pool_size=(2, 2), trainable=True, pars=PARS, allowed_pars=ALLOWED_PARS):
+                  pool_size=(2, 2), trainable=True, pars={}, allowed_pars={}):
     """Function returning the output of one of the pooling blocks.
 
     Allows not to make different versions of the u-net in terms of how pooling operation is performed:
@@ -852,9 +857,10 @@ def pooling_block(inputs, filters, kernel_size=(3, 3), strides=(2, 2), padding='
     :return: 4D tensor (samples, rows, cols, channels) output of a pooling block
     """
     # checking that the allowed trainable parameters did not change in ALLOWED_PARS
-    assert allowed_pars.get('pooling_block').get('trainable') == [True, False]
+    if allowed_pars != {}:
+        assert allowed_pars.get('pooling_block').get('trainable') == [True, False]
     # keep trainable argument if need to use without PARS
-    assert trainable in allowed_pars.get('pooling_block').get('trainable')
+    assert trainable in [True, False]
 
     # setting the version
     if pars.get('pooling_block').get('trainable') is None:
@@ -923,28 +929,28 @@ def get_unet_customised(optimizer, pars=PARS):
 
     conv1 = inception_block(inputs, 32, activation=activation)
     print("conv1", conv1._keras_shape)
-    pool1 = pooling_block(inputs=conv1, filters=32, activation=activation)
+    pool1 = pooling_block(inputs=conv1, filters=32, activation=activation, pars=PARS)
     print("pool1", pool1._keras_shape)
     pool1 = Dropout(0.5)(pool1)
     print("pool1", pool1._keras_shape)
 
     conv2 = inception_block(pool1, 64, activation=activation)
     print("conv2", conv2._keras_shape)
-    pool2 = pooling_block(inputs=conv2, filters=64, activation=activation)
+    pool2 = pooling_block(inputs=conv2, filters=64, activation=activation, pars=PARS)
     print("pool2", pool2._keras_shape)
     pool2 = Dropout(0.5)(pool2)
     print("pool2", pool2._keras_shape)
 
     conv3 = inception_block(pool2, 128, activation=activation)
     print("conv3", conv3._keras_shape)
-    pool3 = pooling_block(inputs=conv3, filters=128, activation=activation)
+    pool3 = pooling_block(inputs=conv3, filters=128, activation=activation, pars=PARS)
     print("pool3", pool3._keras_shape)
     pool3 = Dropout(0.5)(pool3)
     print("pool3", pool3._keras_shape)
 
     conv4 = inception_block(pool3, 256, activation=activation)
     print("conv4", conv4._keras_shape)
-    pool4 = pooling_block(inputs=conv4, filters=256, activation=activation)
+    pool4 = pooling_block(inputs=conv4, filters=256, activation=activation, pars=PARS)
     print("pool4", pool4._keras_shape)
     pool4 = Dropout(0.5)(pool4)
     print("pool4", pool4._keras_shape)
