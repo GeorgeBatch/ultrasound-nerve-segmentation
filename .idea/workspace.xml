@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9c543fa2-0953-4841-ba10-1fdd98b20fb2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Untitled-checkpoint.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/working/urss_final_code_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/working/urss_final_code_script.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,7 +13,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="61">
@@ -27,7 +25,26 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/.gitignore" />
+      </list>
+    </option>
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -41,11 +58,6 @@
             <path>
               <item name="ultrasound-nerve-segmentation" type="b2602c69:ProjectViewProjectNode" />
               <item name="ultrasound-nerve-segmentation" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ultrasound-nerve-segmentation" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ultrasound-nerve-segmentation" type="462c0819:PsiDirectoryNode" />
-              <item name="working" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -119,5 +131,24 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="1) Change pars=PARS, allowed_pars=ALLOWED_PARS&#10;   to pars={}, allowed_pars={} in all blocks so the functions can be&#10;   used without specifying them&#10;2) apdate all pooling blocks in the unet to include pars=PARS" />
     <option name="LAST_COMMIT_MESSAGE" value="1) Change pars=PARS, allowed_pars=ALLOWED_PARS&#10;   to pars={}, allowed_pars={} in all blocks so the functions can be&#10;   used without specifying them&#10;2) apdate all pooling blocks in the unet to include pars=PARS" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/working/urss_final_code_script.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="61">
+          <caret line="813" column="111" lean-forward="true" selection-start-line="813" selection-start-column="111" selection-end-line="813" selection-end-column="111" />
+          <folding>
+            <element signature="e#944#953#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>
