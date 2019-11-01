@@ -230,7 +230,6 @@ if __name__ == '__main__':
 # checking what is in the directory
 print(os.listdir(preprocess_path))
 
-
 ########################################################################################################################
 # ======================================================================================================================
 # metric
@@ -301,7 +300,6 @@ if __name__ == '__main__':
     res = np_dice_coef(a, b)
     print(res)
 
-
 ########################################################################################################################
 # ======================================================================================================================
 # check_pars
@@ -314,6 +312,13 @@ from keras.optimizers import Adam
 
 
 def check_dict_subset(subset, superset):
+    """Checks if one nested dictionary is a subset of another
+
+    :param subset: subset dictionary
+    :param superset: superset dictionary
+    :return: if failed: gives helpful print statements and assertion error
+             if successful, prints 'Your parameter choice is valid'
+    """
     print("superset keys:", superset.keys())
     print("subset keys:", subset.keys())
     assert all(item in superset.keys() for item in subset.keys())
@@ -328,11 +333,13 @@ def check_dict_subset(subset, superset):
             assert subset[key] in superset[key]
             print("subset[key] item:", subset[key], " is in superset[key] items:", superset[key])
         else:
-            return type(superset[key]), superset[key], "something went wrong"
+            print("Something went wrong. Uncomment the print statements in check_dict_subset() for easier debugging.")
+            return type(superset[key]), superset[key]
 
     return 'Your parameter choice is valid'
 
 
+# Only change ALLOWED_PARS if adding new functionality
 ALLOWED_PARS = {
     'outputs': [1, 2],
     'activation': ['elu', 'relu'],
@@ -349,8 +356,15 @@ ALLOWED_PARS = {
     'connection_block': ['not_residual', 'residual']
 }
 
-# for reference
+# for reference: in combination, these parameter choice showed the best performance
 BEST_OPTIMIZER = Adam(lr=0.0045)
+BEST_PARS = {
+    'outputs': 2,
+    'activation': 'elu',
+    'pooling_block': {'trainable': True},
+    'information_block': {'inception': {'v2': 'b'}},
+    'connection_block': 'residual'
+}
 
 ########################################################################################################################
 # ======================================================================================================================
@@ -372,22 +386,22 @@ from keras.optimizers import Adam
 # look up the format and the available parameters
 print(ALLOWED_PARS)
 
+# The result is very sensitive to the choice of the Learning Rate parameter  of the optimizer
 # DO NOT CHANGE THE NAME, you can change the parameters
 OPTIMIZER = Adam(lr=0.0045)
 
 # DO NOT CHANGE THE NAME, you can change the parameters
 PARS = {
-    'outputs': 2,
-    'activation': 'elu',
-    'pooling_block': {'trainable': True},
-    'information_block': {'inception': {'v2': 'b'}},
-    'connection_block': 'residual'
+    'outputs': 1,
+    'activation': 'relu',
+    'pooling_block': {'trainable': False},
+    'information_block': {'convolution': {'simple': 'normalized'}},
+    'connection_block': 'not_residual'
 }
 
 # DO NOT REMOVE THIS LINE, it checks if the parameter choice is valid
 assert PARS.keys() == ALLOWED_PARS.keys()
 check_dict_subset(PARS, ALLOWED_PARS)
-
 
 ########################################################################################################################
 # ======================================================================================================================
@@ -398,9 +412,10 @@ check_dict_subset(PARS, ALLOWED_PARS)
 
 # standard-module imports
 import numpy as np
-from keras.layers import add, concatenate, Conv2D, MaxPooling2D
+from keras.layers import add, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose, UpSampling2D
 from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
 from keras.layers.advanced_activations import ELU, LeakyReLU
+
 
 # # separate-module imports
 # import check_pars
@@ -427,11 +442,13 @@ def NConv2D(filters, kernel_size, strides=(1, 1), padding='valid', dilation_rate
     :param dilation_rate: an integer or tuple/list of a single integer, specifying the dilation rate
                     to use for dilated convolution. Currently, specifying any dilation_rate value != 1
                     is incompatible with specifying any strides value != 1
-    :param activation: specify the activation to be performed after BatchNormalization
+    :param activation:  string, one of 'elu' or 'relu' or None (case-sensitive),
+                        specifies activation function to be performed after BatchNormalization
     :param kernel_initializer: Initializer for the kernel weights matrix (see initializers in keras documentation)
     :return: a function, combined of 2D Convolution, followed by BatchNormalization across filters,
              and specified activation in that order
     """
+    assert activation in ['relu', 'elu', None]
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
 
@@ -460,7 +477,7 @@ def _shortcut(_input, residual):
     return add([shortcut, residual])
 
 
-def rblock(inputs, kernel_size, filters, scale=0.1):
+def rblock(inputs, filters, kernel_size, padding='valid', activation=None, scale=0.1):
     """Create a scaled Residual block connecting the down-path and the up-path of the u-net architecture
 
     Activations are scaled by a constant to prevent the network from dying. Usually is set between 0.1 and 0.3. See:
@@ -470,14 +487,21 @@ def rblock(inputs, kernel_size, filters, scale=0.1):
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output convolution filters)
     :param kernel_size: An integer or tuple/list of 2 integers, specifying the height and width of the 2D convolution
                         window. Can be a single integer to specify the same value for all spatial dimensions.
+    :param padding: one of 'valid' or 'same' (case-insensitive), 'valid' by default to have the same as Conv2D
+    :param activation:  string, one of 'elu' or 'relu' or None (case-sensitive),
+                        specifies activation function to use everywhere in the block
     :param scale: scaling factor preventing the network from dying out
     :return: 4D tensor (samples, rows, cols, channels) output of a residual block, given inputs
     """
-    residual = Conv2D(filters=filters, kernel_size=kernel_size, padding='same')(inputs)
+    assert activation in ['relu', 'elu', None]
+    # actv is a function, not a string, like activation
+    actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
+
+    residual = Conv2D(filters=filters, kernel_size=kernel_size, padding=padding)(inputs)
     residual = BatchNormalization(axis=3)(residual)
     residual = Lambda(lambda x: x * scale)(residual)
     res = _shortcut(inputs, residual)
-    return ELU()(res)
+    return actv()(res)
 
 
 # ======================================================================================================================
@@ -502,16 +526,16 @@ def convolution_block(inputs, filters, kernel_size=(3, 3), padding='valid', acti
     :param allowed_pars: dictionary of all allowed to be passed to u-net parameters
     :return: 4D tensor (samples, rows, cols, channels) output of a convolution block, given inputs
     """
+    assert activation in ['relu', 'elu', None]
+
     # checking that the allowed version names did not change in ALLOWED_PARS
     if allowed_pars != {}:
-        assert allowed_pars.get('information_block').get('convolution').get('simple') == ['not_normalized', 'normalized']
+        assert allowed_pars.get('information_block').get('convolution').get('simple') == ['not_normalized',
+                                                                                          'normalized']
     # keep version argument if need to use without PARS
     assert version in ['not_normalized', 'normalized']
-
-    # setting the version
-    if pars.get('information_block').get('convolution').get('simple') is None:
-        version = version
-    else:
+    # setting the version from pars
+    if pars.get('information_block').get('convolution').get('simple') is not None:
         version = pars.get('information_block').get('convolution').get('simple')
 
     if version == 'normalized':
@@ -543,16 +567,16 @@ def dilated_convolution_block(inputs, filters, kernel_size=(3, 3), padding='vali
     :param allowed_pars: dictionary of all allowed to be passed to u-net parameters
     :return: 4D tensor (samples, rows, cols, channels) output of a dilated-convolution block, given inputs
     """
+    assert activation in ['relu', 'elu', None]
+
     # checking that the allowed version names did not change in ALLOWED_PARS
     if allowed_pars != {}:
-        assert allowed_pars.get('information_block').get('convolution').get('dilated') == ['not_normalized', 'normalized']
+        assert allowed_pars.get('information_block').get('convolution').get('dilated') == ['not_normalized',
+                                                                                           'normalized']
     # keep version argument if need to use without PARS
     assert version in ['not_normalized', 'normalized']
-
-    # setting the version
-    if pars.get('information_block').get('convolution') is None:
-        version = version
-    else:
+    # setting the version from pars
+    if pars.get('information_block').get('convolution') is not None:
         version = pars.get('information_block').get('convolution')
 
     if version == 'normalized':
@@ -586,7 +610,8 @@ def inception_block_v1(inputs, filters, activation=None, version='b', pars={}, a
     The concatenated output of the verticals is normalised and then activated with a given activation
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
-    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the convolution).
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the
+    convolution).
     :param activation: string, specifies activation function to use everywhere in the block
     :param version: version of inception block, one of 'a', 'b' (case sensitive)
     :param pars: dictionary of parameters passed to u-net, determines the version, if this type of block is chosen
@@ -595,19 +620,19 @@ def inception_block_v1(inputs, filters, activation=None, version='b', pars={}, a
     """
 
     assert filters % 16 == 0
+
     # checking that the allowed version names did not change in ALLOWED_PARS
     if allowed_pars != {}:
         assert allowed_pars.get('information_block').get('inception').get('v1') == ['a', 'b']
     # keep version argument if need to use without PARS
     assert version in ['a', 'b']
+    # setting the version from pars
+    if pars.get('information_block').get('inception').get('v1') is not None:
+        version = pars.get('information_block').get('inception').get('v1')
 
+    assert activation in ['relu', 'elu', None]
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
-    # setting the version
-    if pars.get('information_block').get('inception').get('v1') is None:
-        version = version
-    else:
-        version = pars.get('information_block').get('inception').get('v1')
 
     # vertical 1
     if version == 'a':
@@ -631,7 +656,7 @@ def inception_block_v1(inputs, filters, activation=None, version='b', pars={}, a
         c3 = Conv2D(filters=filters // 8, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(p3_1)
     else:
         c3 = p3_1
-        
+
     # vertical 4
     c4_1 = Conv2D(filters=filters // 4, kernel_size=(1, 1), padding='same', kernel_initializer='he_normal')(inputs)
     c4 = c4_1
@@ -672,19 +697,19 @@ def inception_block_v2(inputs, filters, activation=None, version='b', pars={}, a
     :return: 4D tensor (samples, rows, cols, channels) output of an inception block, given inputs
     """
     assert filters % 16 == 0
+
     # checking that the allowed version names did not change in ALLOWED_PARS
     if allowed_pars != {}:
         assert allowed_pars.get('information_block').get('inception').get('v2') == ['a', 'b', 'c']
     # keep version argument if need to use without PARS
     assert version in ['a', 'b', 'c']
+    # setting the version from pars
+    if pars.get('information_block').get('inception').get('v2') is not None:
+        version = pars.get('information_block').get('inception').get('v2')
 
+    assert activation in ['relu', 'elu', None]
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
-    # setting the version
-    if pars.get('information_block').get('inception').get('v2') is None:
-        version = version
-    else:
-        version = pars.get('information_block').get('inception').get('v2')
 
     # vertical 1
     c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same',
@@ -780,19 +805,19 @@ def inception_block_et(inputs, filters, activation='relu', version='b', pars={},
     :return: 4D tensor (samples, rows, cols, channels) output of an inception block, given inputs
     """
     assert filters % 16 == 0
+
     # checking that the allowed version names did not change in ALLOWED_PARS
     if allowed_pars != {}:
         assert allowed_pars.get('information_block').get('inception').get('et') == ['a', 'b']
     # keep version argument if need to use without PARS
     assert version in ['a', 'b']
+    # setting the version from pars
+    if pars.get('information_block').get('inception').get('et') is not None:
+        version = pars.get('information_block').get('inception').get('et')
 
+    assert activation in ['relu', 'elu', None]
     # actv is a function, not a string, like activation
     actv = activation == 'relu' and (lambda: LeakyReLU(0.0)) or activation == 'elu' and (lambda: ELU(1.0)) or None
-    # setting the version
-    if pars.get('information_block').get('inception').get('et') is None:
-        version = version
-    else:
-        version = pars.get('information_block').get('inception').get('et')
 
     # vertical 1
     c1_1 = Conv2D(filters=filters // 16, kernel_size=(1, 1), padding='same',
@@ -854,7 +879,8 @@ def pooling_block(inputs, filters, kernel_size=(3, 3), strides=(2, 2), padding='
     :param pool_size:   MaxPooling2D argument, pool_size
 
     :param trainable: boolean specifying the version of a pooling block with default behaviour
-        trainable=True: NConv2D(inputs._keras_shape[3], kernel_size=kernel_size, strides=strides, padding=padding)(inputs)
+        trainable=True: NConv2D(inputs._keras_shape[3], kernel_size=kernel_size, strides=strides, padding=padding)(
+        inputs)
         trainable=False: MaxPooling2D(pool_size=pool_size)(inputs)
     :param pars: dictionary of parameters passed to u-net, determines the version of the block
     :param allowed_pars: dictionary of all allowed to be passed to u-net parameters
@@ -867,10 +893,8 @@ def pooling_block(inputs, filters, kernel_size=(3, 3), strides=(2, 2), padding='
     # keep trainable argument if need to use without PARS
     assert trainable in [True, False]
 
-    # setting the version
-    if pars.get('pooling_block').get('trainable') is None:
-        trainable = trainable
-    else:
+    # setting the version from pars
+    if pars.get('pooling_block').get('trainable') is not None:
         trainable = pars.get('pooling_block').get('trainable')
 
     # returning block's output
@@ -902,15 +926,13 @@ def information_block(inputs, filters, kernel_size=(3, 3), padding='valid', acti
     :param pars: dictionary of parameters passed to u-net, determines the version of the block
     :param allowed_pars: dictionary of all allowed to be passed to u-net parameters
 
-    :return: 4D tensor (samples, rows, cols, channels) output of a pooling block
+    :return: 4D tensor (samples, rows, cols, channels) output of a information block
     """
     # getting which block, block_type, version to use as the information block
-    if pars.get('information_block') is None:
-        block, block_type, version = block, block_type, version
-    else:
+    if pars.get('information_block') is not None:
         block = list(pars.get('information_block').keys())[0]
         block_type = list(pars.get('information_block').get(block).keys())[0]
-        version = pars.get('information_block').get(block).get(block_type)[0]
+        version = pars.get('information_block').get(block).get(block_type)
 
     # inception block
     if block == 'inception':
@@ -934,6 +956,40 @@ def information_block(inputs, filters, kernel_size=(3, 3), padding='valid', acti
                                              kernel_size=kernel_size, padding=padding,
                                              activation=activation, version=version,
                                              pars=pars, allowed_pars=allowed_pars)
+
+
+def connection_block(inputs, filters, padding='valid', activation=None,
+                     version='residual', pars={}, allowed_pars={}):
+    """Function returning the output of one of the connection block.
+
+    :param inputs: 4D tensor (samples, rows, cols, channels)
+    :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the
+                    convolution).
+    :param padding: one of 'valid' or 'same' (case-insensitive), 'valid' by default to have the same as Conv2D
+    :param activation:  string, one of 'elu' or 'relu' or None (case-sensitive),
+                        specifies activation function to use everywhere in the block
+
+    Version parameter is there to be able to leave 'pars' and 'allowed_pars' empty
+    :param version: one of 'not_residual' or 'residual', version of a block to use
+
+    :param pars: dictionary of parameters passed to u-net, determines the version of the block
+    :param allowed_pars: dictionary of all allowed to be passed to u-net parameters
+
+    :return: 4D tensor (samples, rows, cols, channels) output of a connection block
+    """
+    # checking that the allowed trainable parameters did not change in ALLOWED_PARS
+    if allowed_pars != {}:
+        assert allowed_pars.get('connection_block') == ['not_residual', 'residual']
+    # keep trainable argument if need to use without PARS
+    assert version in ['not_residual', 'residual']
+    # setting the version from pars
+    if pars.get('connection_block') is not None:
+        version = pars.get('connection_block')
+
+    if version == 'residual':
+        return rblock(inputs=inputs, filters=32, kernel_size=(1, 1), padding='same', activation=activation)
+    else:
+        return Conv2D(filters=filters, kernel_size=(2, 2), padding=padding, kernel_initializer='he_normal')(inputs)
 
 
 ########################################################################################################################
@@ -982,51 +1038,51 @@ def get_unet_customised(optimizer, pars=PARS, allowed_pars=ALLOWED_PARS):
 
     # input
     inputs = Input((IMG_ROWS, IMG_COLS, 1), name='main_input')
-    print("inputs:", inputs._keras_shape)
+    print('inputs:', inputs._keras_shape)
 
     #
     # down the U-net
     #
 
-    conv1 = information_block(inputs, 32, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv1", conv1._keras_shape)
+    conv1 = information_block(inputs, 32, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv1', conv1._keras_shape)
     pool1 = pooling_block(inputs=conv1, filters=32, activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("pool1", pool1._keras_shape)
+    print('pool1', pool1._keras_shape)
     pool1 = Dropout(0.5)(pool1)
-    print("pool1", pool1._keras_shape)
+    print('pool1', pool1._keras_shape)
 
-    conv2 = information_block(pool1, 64, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv2", conv2._keras_shape)
+    conv2 = information_block(pool1, 64, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv2', conv2._keras_shape)
     pool2 = pooling_block(inputs=conv2, filters=64, activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("pool2", pool2._keras_shape)
+    print('pool2', pool2._keras_shape)
     pool2 = Dropout(0.5)(pool2)
-    print("pool2", pool2._keras_shape)
+    print('pool2', pool2._keras_shape)
 
-    conv3 = information_block(pool2, 128, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv3", conv3._keras_shape)
+    conv3 = information_block(pool2, 128, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv3', conv3._keras_shape)
     pool3 = pooling_block(inputs=conv3, filters=128, activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("pool3", pool3._keras_shape)
+    print('pool3', pool3._keras_shape)
     pool3 = Dropout(0.5)(pool3)
-    print("pool3", pool3._keras_shape)
+    print('pool3', pool3._keras_shape)
 
-    conv4 = information_block(pool3, 256, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv4", conv4._keras_shape)
+    conv4 = information_block(pool3, 256, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv4', conv4._keras_shape)
     pool4 = pooling_block(inputs=conv4, filters=256, activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("pool4", pool4._keras_shape)
+    print('pool4', pool4._keras_shape)
     pool4 = Dropout(0.5)(pool4)
-    print("pool4", pool4._keras_shape)
+    print('pool4', pool4._keras_shape)
 
     #
     # bottom level of the U-net
     #
-    conv5 = information_block(pool4, 512, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv5", conv5._keras_shape)
+    conv5 = information_block(pool4, 512, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv5', conv5._keras_shape)
     conv5 = Dropout(0.5)(conv5)
-    print("conv5", conv5._keras_shape)
+    print('conv5', conv5._keras_shape)
 
     #
     # auxiliary output for predicting probability of nerve presence
-    #    
+    #
     if pars['outputs'] == 2:
         pre = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid')(conv5)
         pre = Flatten()(pre)
@@ -1036,42 +1092,46 @@ def get_unet_customised(optimizer, pars=PARS, allowed_pars=ALLOWED_PARS):
     # up the U-net
     #
 
-    after_conv4 = rblock(conv4, 1, 256)
-    print("after_conv4", after_conv4._keras_shape)
+    after_conv4 = connection_block(conv4, 256, padding='same', activation=activation,
+                                   pars=pars, allowed_pars=allowed_pars)
+    print('after_conv4', after_conv4._keras_shape)
     up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), after_conv4], axis=3)
-    conv6 = information_block(up6, 256, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv6", conv6._keras_shape)
+    conv6 = information_block(up6, 256, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv6', conv6._keras_shape)
     conv6 = Dropout(0.5)(conv6)
-    print("conv6", conv6._keras_shape)
+    print('conv6', conv6._keras_shape)
 
-    after_conv3 = rblock(conv3, 1, 128)
-    print("after_conv3", after_conv3._keras_shape)
+    after_conv3 = connection_block(conv3, 128, padding='same', activation=activation,
+                                   pars=pars, allowed_pars=allowed_pars)
+    print('after_conv3', after_conv3._keras_shape)
     up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), after_conv3], axis=3)
-    conv7 = information_block(up7, 128, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv7", conv7._keras_shape)
+    conv7 = information_block(up7, 128, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv7', conv7._keras_shape)
     conv7 = Dropout(0.5)(conv7)
-    print("conv7", conv7._keras_shape)
+    print('conv7', conv7._keras_shape)
 
-    after_conv2 = rblock(conv2, 1, 64)
-    print("after_conv2", after_conv2._keras_shape)
+    after_conv2 = connection_block(conv2, 64, padding='same', activation=activation, pars=pars,
+                                   allowed_pars=allowed_pars)
+    print('after_conv2', after_conv2._keras_shape)
     up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), after_conv2], axis=3)
-    conv8 = information_block(up8, 64, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv8", conv8._keras_shape)
+    conv8 = information_block(up8, 64, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv8', conv8._keras_shape)
     conv8 = Dropout(0.5)(conv8)
-    print("conv8", conv8._keras_shape)
+    print('conv8', conv8._keras_shape)
 
-    after_conv1 = rblock(conv1, 1, 32)
-    print("after_conv1", after_conv1._keras_shape)
+    after_conv1 = connection_block(conv1, 32, padding='same', activation=activation,
+                                   pars=pars, allowed_pars=allowed_pars)
+    print('after_conv1', after_conv1._keras_shape)
     up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), after_conv1], axis=3)
-    conv9 = information_block(up9, 32, padding="same", activation=activation, pars=pars, allowed_pars=allowed_pars)
-    print("conv9", conv9._keras_shape)
+    conv9 = information_block(up9, 32, padding='same', activation=activation, pars=pars, allowed_pars=allowed_pars)
+    print('conv9', conv9._keras_shape)
     conv9 = Dropout(0.5)(conv9)
-    print("conv9", conv9._keras_shape)
+    print('conv9', conv9._keras_shape)
 
     # main output
     conv10 = Conv2D(1, kernel_size=(1, 1), kernel_initializer='he_normal', activation='sigmoid', name='main_output')(
         conv9)
-    print("conv10", conv10._keras_shape)
+    print('conv10', conv10._keras_shape)
 
     # creating a model
     # compiling the model
@@ -1110,7 +1170,6 @@ if __name__ == '__main__':
     print('params', model.count_params())
     print('layer num', len(model.layers))
 
-
 ########################################################################################################################
 # ======================================================================================================================
 # train
@@ -1120,6 +1179,7 @@ if __name__ == '__main__':
 # standard-module imports
 import numpy as np
 import cv2
+import random
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras import backend as K
@@ -1155,6 +1215,55 @@ def preprocess(imgs, to_rows=None, to_cols=None):
     return imgs_p
 
 
+def count_enum(words):
+    wdict = {}
+    get = wdict.get
+    for word in words:
+        wdict[word] = get(word, 0) + 1
+    return wdict
+
+
+def shuffle_train(data, mask):
+    """Create a random permutation of samples
+
+    :param data: 4D data tensor of train images, shape (samples, rows, cols, channels)
+    :param mask: 4D data tensor of train masks shape (samples, rows, cols, channels)
+    :return: a tuple (data, mask) with samples both data and mask tensors permuted
+    """
+    perm = np.random.permutation(len(data))
+    data = data[perm]
+    mask = mask[perm]
+    return data, mask
+
+
+def split_train_and_valid_by_patient(data, mask, validation_split, shuffle=False):
+    """Create a split of training data into training and validation data by patient
+
+        :param data: 4D data tensor of train images, shape (samples, rows, cols, channels)
+        :param mask: 4D data tensor of train masks shape (samples, rows, cols, channels)
+        :param validation_split: validation split, e.g. validation_split=0.2 will put 20% of the patients into
+        validation set
+        :param shuffle: boolean variable, whether to shuffle the patient ids before choosing ids for validation
+        :return: a tuple of tuples (x_train, y_train), (x_valid, y_valid), where "y" stands for masks
+        """
+    print('Shuffle & split...')
+    patient_nums = load_patient_num()
+    patient_dict = count_enum(patient_nums)
+    pnum = len(patient_dict)
+    val_num = int(pnum * validation_split)
+    patients = patient_dict.keys()
+    if shuffle:
+        random.shuffle(patients)
+    val_p, train_p = patients[:val_num], patients[val_num:]
+    train_indexes = [i for i, c in enumerate(patient_nums) if c in set(train_p)]
+    val_indexes = [i for i, c in enumerate(patient_nums) if c in set(val_p)]
+    x_train, y_train = data[train_indexes], mask[train_indexes]
+    x_valid, y_valid = data[val_indexes], mask[val_indexes]
+    print('val patients:', len(x_valid), val_p)
+    print('train patients:', len(x_train), train_p)
+    return (x_train, y_train), (x_valid, y_valid)
+
+
 def train_and_predict():
     print('-' * 30)
     print('Loading and preprocessing train data...')
@@ -1165,10 +1274,10 @@ def train_and_predict():
     imgs_train = preprocess(imgs_train)
     imgs_mask_train = preprocess(imgs_mask_train)
 
+    # centering and standardising the images
     imgs_train = imgs_train.astype('float32')
-    mean = np.mean(imgs_train)  # mean for data centering
-    std = np.std(imgs_train)  # std for data normalization
-
+    mean = np.mean(imgs_train)
+    std = np.std(imgs_train)
     imgs_train -= mean
     imgs_train /= std
 
@@ -1233,7 +1342,6 @@ def train_and_predict():
 if __name__ == '__main__':
     train_and_predict()
 
-
 ########################################################################################################################
 # ======================================================================================================================
 # Submission
@@ -1243,6 +1351,7 @@ if __name__ == '__main__':
 # standard-module imports
 from skimage.transform import resize
 from itertools import chain
+
 
 # # separate-module imports
 # from data import load_test_data
@@ -1341,4 +1450,3 @@ def submission():
 # --------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     submission()
-
