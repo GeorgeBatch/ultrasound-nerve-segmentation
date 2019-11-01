@@ -37,10 +37,10 @@ In summer 2019, I was conducting an undergraduate research project within the St
 * Theoretical understanding of how Neural Networks work, at the level of being comfortable with chapters 5-9 of "Deep Learning" by Ian Goodfellow, Yoshua Bengio, Aaron Courville (2016). http://www.deeplearningbook.org/
 
 ### Project Results:
-* Achieved top 10% of the competition's private leaderboard (for old competitions the results of late submissions are not displayed)
+* Achieved **top 10%** of the competition's leaderboard (for old competitions the results of late submissions are not displayed)
+* Created a customisable U-net-like neural network with **160 different configurations**
 * Gained practical experience of creating software for Image Segmantation
 * Gained experience of doing independent research and working with academic papers
-
 
 ## Initial Research
 
@@ -66,7 +66,7 @@ I also found the article which (in my opinion) very well summarises and explains
 
 ## Acknowledgements
 
-Due to the lack of practical experience, I based my project on the code written by Marko Jocić and Edward Tyantov.
+Due to the lack of practical experience, I based my project on the code written by Marko Jocić (MJ) and Edward Tyantov (ET).
 
 **Marko Jocić's work:** [Kaggle][MJ's Kaggle], [GitHub][MJ's GitHub]
 
@@ -90,7 +90,6 @@ Marko Jocić released the code at the very beginning of the competition. I decid
 * Due to some reason, Marko Jocić's code did not give me the 0.57 result, as stated in his Kaggle notebook.
 * Finally, as you hopefully already read in my "Warning" section, I needed to be able to run the code on Kaggle servers, which was not possible, given the original code. The code by both authors did not compile. This happened because of the changes made to the Python libraries since 2016 when the competition was held. Even after arranging all the code together and fixing the compilation problem, the code had many bugs, occurring due to other Python library updates. Some of the bugs were left unchanged in author's GitHub versions.
 
-
 ## Running the code
 
 ### Running project's code
@@ -105,7 +104,9 @@ You can also run this code in separate Kaggle script, which is just a concatenat
 #### Running on personal machines
 If you would like to work with the code presented below on your sown machine, I recommend cloning my GitHub repository. This way, you do not need to set up a directory. [Link to project's repository.](https://github.com/GeorgeBatch/ultrasound-nerve-segmentation) 
 
-#### Setting up your directory
+## Required set-up
+
+### Setting up your directory
 
 If you decided to download code in separate files, first, you need to set up your directory structure as shown below. The structure mimics Kaggles's directory structure. On Kaggle, your script/notebook is in the working directory by default, while any data you upload goes inside the input directory.
 
@@ -136,7 +137,7 @@ If you decided to download code in separate files, first, you need to set up you
         ---- …
 ```
 
-#### Requirements:
+### Requirements:
 
 See [kaggle/python docker image](https://github.com/kaggle/docker-python)
 
@@ -151,16 +152,17 @@ Minimal information:
 
 If you are using Theano backend, check that the shape of the data is in the form (samples, rows, cols, channels). Otherwise, the code breaks.
 
-#### Executing files:
+### Executing files:
 
 To run this code, you need access to a GPU processing unit. I ran trained the model on Kaggle's GPU. Otherwise, it can take up to 2.5 days on Intel-i7 processors.
 
 Order of file execution:
 * data.py
 * metric.py
+* check_pars.py
+* configuration.py **- configure your network and the learning rate optimizer**
 * u_model_blocks.py
 * u_model.py
-* configuration.py
 * train.py
 * submission.py
 
@@ -168,7 +170,7 @@ Alternatively execute one of:
 * urss_final_code_script.py
 * Edward_Tyantov_edited.py
 
-#### Configuration
+### Configuration
 There are several versions of the U-net architecture you can try. If you want to try it out, do not change anything in the configuration module (configuration.py on GitHub) and you get the U-net kindly provided by Marko Jocić at the beginning of the competition.
 
 In case you want to experiment, I list the versions I tried here. To configure your version of the U-net, you need to make decisions on each level of granularity (see below) combining all the top-level decisions into parameters, which you pass to the U-net-generating function. Below you can see the configuration structure:
@@ -176,11 +178,17 @@ In case you want to experiment, I list the versions I tried here. To configure y
 * Number of outputs
     * One output
     * Two outputs
+* Activation
+    * ReLU
+    * ELU
 * Blocks for capturing information
     * Convolution blocks
-        * Simple
-        * With batch-normalization
-        * With batch-normalization and dropout
+        * Simple convolutions (see [simple implementation][simple u-net implementation])
+            * With batch-normalization
+            * Without batch-normalization
+        * Dilated convolutions (see [referenced paper][Dilated convolutions paper])
+            * With batch-normalization
+            * Without batch-normalization
     * Inception blocks (see [the article][Inception-blocks article] and two referenced papers [paper 1][Inception v1], [paper 2][Inception v2 and v3])
          * Inception block v1, versions a, b
          * Inception block v2, versions a, b, c
@@ -191,10 +199,14 @@ In case you want to experiment, I list the versions I tried here. To configure y
 * Pooling layers reducing the size of the image
     * Non-trainable: Max-pooling layers
     * Trainable: Normalized Convolution layers with strides
-* Optimizer
-    * Select any available optimizer from [Keras optimizers](https://keras.io/optimizers/)
+
+**Optimizer**: Select any available optimizer from [Keras optimizers](https://keras.io/optimizers/)
     
-[Original U-net paper]: https://arxiv.org/abs/1505.04597 
+[Original U-net paper]: https://arxiv.org/abs/1505.04597
+[simple u-net implementation]: https://github.com/zhixuhao/unet
+
+[Dilated convolutions paper]: https://arxiv.org/abs/1511.07122
+
 [Inception-blocks article]: https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202
 [Inception v1]: https://arxiv.org/abs/1409.4842
 [Inception v2 and v3]: https://arxiv.org/abs/1512.00567v3
