@@ -264,9 +264,9 @@ def create_train_data():
         # get the patient number of the image
         patient_num = image_name.split('_')[0]
         # read the image itself to an np.array
-        img = cv2.imread(os.path.join(train_data_path, image_name), cv2.IMREAD_GRAYSCALE)
+        img = imread(os.path.join(train_data_path, image_name), as_gray=True)
         # read the corresponding mask to an np.array
-        img_mask = cv2.imread(os.path.join(train_data_path, image_mask_name), cv2.IMREAD_GRAYSCALE)
+        img_mask = imread(os.path.join(train_data_path, image_mask_name), as_gray=True)
 
         imgs[i, :, :, 0] = img
         imgs_mask[i, :, :, 0] = img_mask
@@ -305,7 +305,7 @@ def create_test_data():
     print('Creating test images...')
     for image_name in images:
         img_id = int(image_name.split('.')[0])
-        img = cv2.imread(os.path.join(test_data_path, image_name), cv2.IMREAD_GRAYSCALE)
+        img = imread(os.path.join(test_data_path, image_name), as_gray=True)
 
         imgs[i, :, :, 0] = img
         imgs_id[i] = img_id
@@ -328,6 +328,7 @@ if __name__ == '__main__':
 
 # checking what is in the directory
 print(os.listdir(preprocess_path))
+
 
 ########################################################################################################################
 # ======================================================================================================================
@@ -408,9 +409,8 @@ if __name__ == '__main__':
 # needed for u_model
 
 # standard-module imports
-import numpy as np
-from keras.layers import add, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose, UpSampling2D
-from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
+from keras.layers import add, concatenate, Conv2D, MaxPooling2D
+from keras.layers import BatchNormalization, Lambda
 from keras.layers.advanced_activations import ELU, LeakyReLU
 
 
@@ -998,11 +998,11 @@ def connection_block(inputs, filters, padding='valid', activation=None,
 
 # standard-module imports
 import numpy as np
-from keras.layers import Input, add, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Dense
-from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
-from keras.layers.advanced_activations import ELU, LeakyReLU
+from keras.layers import Input, concatenate, Conv2D, UpSampling2D, Dense
+from keras.layers import Dropout, Flatten
 from keras.models import Model
 from keras.optimizers import Adam
+from keras import backend as K
 
 # # separate-module imports
 # from metric import dice_coef, dice_coef_loss
@@ -1176,17 +1176,10 @@ if __name__ == '__main__':
 # standard-module imports
 import numpy as np
 import cv2
-import random
-from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras import backend as K
-
-# Kaggle does not allow too many output files, so prediction masks are not saved
-from skimage.io import imsave
 
 
 # # separate-module imports
-#
 # from u_model import get_unet, IMG_COLS as img_cols, IMG_ROWS as img_rows
 # from data import load_train_data, load_test_data, load_patient_num, load_nerve_presence
 # from configuration import *
