@@ -1,7 +1,5 @@
 # Kaggle Ultrasound Nerve Segmentation Competition (2016)<br>as an Undergraduate Research Project.
 
-# Current version - Work in Progress
-
 ## Warning!!!
 
 The code was run on Kaggle machines in July 2019 - October 2019 using Python 3 interpreter. It might stop working in the future due to the changes to Kaggle virtual environment and the updates of Python libraries used in this code. Please check [Kaggle documentation] and [kaggle/python docker image] for more information.
@@ -18,7 +16,7 @@ The code was run on Kaggle machines in July 2019 - October 2019 using Python 3 i
 * Institution: University of Warwick
 * Department: Statistics
 * Project funding: Undergraduate Research Support Scheme at the University of Warwick
-* Project's oficial dates: July 1st 2019 - August 29th 2019
+* Project's official dates: July 1st 2019 - August 29th 2019
 * Project's real dates: July 1st 2019 - August 29th 2019, October 2019
 * Data Set: Kaggle "Ultrasound Nerve Segmentation" (2016) <br>https://www.kaggle.com/c/ultrasound-nerve-segmentation/overview
 * Project's GitHub repository: https://github.com/GeorgeBatch/ultrasound-nerve-segmentation
@@ -39,7 +37,7 @@ In summer 2019, I was conducting an undergraduate research project within the St
 ### Project Results:
 * Achieved **top 10%** of the competition's leaderboard (for old competitions the results of late submissions are not displayed)
 * Created a customisable U-net-like neural network with **160 different configurations**
-* Gained practical experience of creating software for Image Segmantation
+* Gained practical experience of creating software for Image Segmentation
 * Gained experience of doing independent research and working with academic papers
 
 ## Initial Research
@@ -51,7 +49,7 @@ Before starting any practical work, a few papers were chosen as preliminary read
 * Julián Gil González, Mauricio A. Álvarez, Álvaro A. Orozco (2015). "Automatic segmentation of nerve structures in ultrasound images using Graph Cuts and Gaussian processes". https://ieeexplore.ieee.org/document/7319045
 * Julián Gil González, Mauricio A. Álvarez, Álvaro A. Orozco (2016). "A probabilistic framework based on SLIC-superpixel and Gaussian processes for segmenting nerves in ultrasound images". https://ieeexplore.ieee.org/document/7591636
 
-Having little experience in the field, I found myselt reading more papers, referenced in the original selection. I list them below for your interest.
+Having little experience in the field, I found myself reading more papers, referenced in the original selection. I list them below for your interest.
 
 ### Follow-up papers:
 * Ronneberger, Olaf; Fischer, Philipp; Brox, Thomas (2015). "U-Net: Convolutional Networks for Biomedical Image Segmentation". https://arxiv.org/abs/1505.04597
@@ -148,21 +146,20 @@ Minimal information:
 * Working with files: os, sys
 * For run-length-encoding: itertools
 * Working with arrays: numpy
-* Working with images: cv2, skimage
+* Working with images: skimage
 
 If you are using Theano backend, check that the shape of the data is in the form (samples, rows, cols, channels). Otherwise, the code breaks.
 
 ### Executing files:
 
-To run this code, you need access to a GPU processing unit. I ran trained the model on Kaggle's GPU. Otherwise, it can take up to 2.5 days on Intel-i7 processors.
+To run this code, you need access to a GPU processing unit. I trained the model on Kaggle's GPU. Otherwise, it can take up to 2.5 days on Intel-i7 processors.
+
+Set model configuration:
+* check_pars.py
+* configuration.py **- configure your network and the learning-rate optimizer**
 
 Order of file execution:
 * data.py
-* metric.py
-* check_pars.py
-* configuration.py **- configure your network and the learning rate optimizer**
-* u_model_blocks.py
-* u_model.py
 * train.py
 * submission.py
 
@@ -214,10 +211,117 @@ In case you want to experiment, I list the versions I tried here. To configure y
 
 ### Running Edward Tyantov's code
 
-As a beginner, I found Marko Jocić's code and the instructions for running it accessible. So I did not document the code and do not intend publishing it here in the future. At the same time, I had many problems with trying to make Edward Tyntov's code run correctly. This is why I made a concatenated, simplified, modified, and documented version of Edward Tyantov's original code availible on Kaggle and GitHub:
+As a beginner, I found Marko Jocić's code and the instructions for running it accessible. So I did not document the code and do not intend publishing it here in the future. At the same time, I had many problems with trying to make Edward Tyantov's code run correctly. This is why I made a concatenated, simplified, modified, and documented version of Edward Tyantov's original code available on Kaggle and GitHub:
 * Kaggle: https://www.kaggle.com/gbatchkala/edward-tyantov-edited-py
 * GitHub: https://github.com/GeorgeBatch/ultrasound-nerve-segmentation/blob/master/working/Edward_Tyantov_edited.py
 
 In both versions, you can find the information about the changes, acknowledgements, and licence at the beginning of the python script.
 
 For GitHub version see LICENCE. If you find any mistakes or want to update the code to satisfy current kaggle environment, please submit your changes to the file via pull request to my GitHub repository.
+
+
+# Modules
+
+## Check parameters module
+
+File name: check_pars.py
+
+Instructions:
+* If used as as separate module, the "separate-module imports" part needs to be uncommented
+* Do not change this module unless you want to make modifications to the u-net configuration
+
+
+## Configuration module
+
+File name: configuration.py
+
+Instructions:
+* If used as as separate module, the "separate-module imports" part needs to be uncommented
+* Select a network configuration of your choice and record it in PARS (check BEST_PARS in check_pars module for format)
+* Select any available optimizer from [Keras optimizers](https://keras.io/optimizers/)
+
+
+## Data module
+
+File name: data.py
+
+Instructions:
+* if used as as separate module, the "separate-module imports" part needs to be uncommented
+* change execute_data to True 
+
+Credits: Edward Tyantov
+
+Modifications:
+* Add get_nerve_presence(), load_nerve_presence() functions to allow one-output architectures
+* Make appropriate updates, so the code can be run on Kaggle with current library versions
+* Add documentation to all functions
+
+
+## Metric module
+
+File name: metric.py
+
+Instructions: if used as as separate module, the "separate-module imports" part needs to be uncommented
+
+Credits: Edward Tyantov
+
+Modifications:
+* Make appropriate updates, so the code can be run on Kaggle with current library versions
+* Add documentation to all functions
+
+
+## U-model blocks module
+
+File name: u_model_blocks.py
+
+Instructions: if used as as separate module, the "separate-module imports" part needs to be uncommented
+
+Credits: Edward Tyantov
+
+Functionality kept from Edward Tyantov's version or insignificantly modified:
+* NConv2D()
+* _shortcut()
+* rblock
+* inception_block_et()
+
+New functionality:
+* convolution_block()
+* dilated_convolution_block()
+* inception_block_v1()
+* inception_block_v2()
+* pooling_block()
+* information_block()
+* connection_block()
+
+
+## U-model module
+
+File name: u_model.py
+
+Instructions: if used as as separate module, the "separate-module imports" part needs to be uncommented
+
+Credits: Marko Jocič, Edward Tyantov
+
+Modification: Make the architecture fully customisable
+
+
+## Train module
+
+File name: train.py
+
+Credits: Marko Jocić
+
+Modifications: allow for training with 1 or 2 outputs of the U-nel-like architecture
+
+Instructions: If used as as separate module, the "separate-module imports" part needs to be uncommented
+
+
+## Submission module
+
+File name: submission.py
+
+Credits: Edward Tyantov
+
+Modifications: allow for training with 1 or 2 outputs of the U-nel-like architecture
+
+Instructions: If used as as separate module, the "separate-module imports" part needs to be uncommented

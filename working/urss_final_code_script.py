@@ -67,6 +67,9 @@ BEST_PARS = {
     'connection_block': 'residual'
 }
 
+print(check_dict_subset(BEST_PARS, ALLOWED_PARS))
+
+
 ########################################################################################################################
 # ======================================================================================================================
 # configuration
@@ -97,7 +100,7 @@ PARS = {
 
 # DO NOT REMOVE THESE LINES, they checks if your parameter choice is valid
 assert PARS.keys() == ALLOWED_PARS.keys()
-check_dict_subset(PARS, ALLOWED_PARS)
+print(check_dict_subset(PARS, ALLOWED_PARS))
 
 
 ########################################################################################################################
