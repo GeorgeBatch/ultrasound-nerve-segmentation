@@ -3,6 +3,111 @@
 
 ########################################################################################################################
 # ======================================================================================================================
+# check_pars
+# ======================================================================================================================
+########################################################################################################################
+# read-only file!!!
+
+# standard-module imports
+from keras.optimizers import Adam
+
+
+def check_dict_subset(subset, superset):
+    """Checks if one nested dictionary is a subset of another
+
+    :param subset: subset dictionary
+    :param superset: superset dictionary
+    :return: if failed: gives helpful print statements and assertion error
+             if successful, prints 'Your parameter choice is valid'
+    """
+    print("superset keys:", superset.keys())
+    print("subset keys:", subset.keys())
+    assert all(item in superset.keys() for item in subset.keys())
+    print("Subset keys is a subset of superset keys", all(item in superset.keys() for item in subset.keys()))
+    for key in subset.keys():
+        print("superset key items:", superset[key])
+        print("subset key items:", subset[key])
+        if type(superset[key]) == dict:
+            assert type(subset[key]) == type(superset[key])
+            check_dict_subset(subset[key], superset[key])
+        elif type(superset[key]) == list:
+            assert subset[key] in superset[key]
+            print("subset[key] item:", subset[key], " is in superset[key] items:", superset[key])
+        else:
+            print("Something went wrong. Uncomment the print statements in check_dict_subset() for easier debugging.")
+            return type(superset[key]), superset[key]
+
+    return 'Your parameter choice is valid'
+
+
+# Only change ALLOWED_PARS if adding new functionality
+ALLOWED_PARS = {
+    'outputs': [1, 2],
+    'activation': ['elu', 'relu'],
+    'pooling_block': {
+        'trainable': [True, False]},
+    'information_block': {
+        'inception': {
+            'v1': ['a', 'b'],
+            'v2': ['a', 'b', 'c'],
+            'et': ['a', 'b']},
+        'convolution': {
+            'simple': ['not_normalized', 'normalized'],
+            'dilated': ['not_normalized', 'normalized']}},
+    'connection_block': ['not_residual', 'residual']
+}
+
+ALLOWED_SPLIT = ['random', 'patient']
+
+# for reference: in combination, these parameter choice showed the best performance
+BEST_OPTIMIZER = Adam(lr=0.0045)
+BEST_PARS = {
+    'outputs': 2,
+    'activation': 'elu',
+    'pooling_block': {'trainable': True},
+    'information_block': {'inception': {'v2': 'b'}},
+    'connection_block': 'residual'
+}
+
+########################################################################################################################
+# ======================================================================================================================
+# configuration
+# ======================================================================================================================
+########################################################################################################################
+
+# standard-module imports
+from keras.optimizers import Adam
+
+# # separate-module imports
+# from check_pars import *
+
+# look up the format and the available parameters
+print(ALLOWED_PARS)
+
+# The result is very sensitive to the choice of the Learning Rate parameter  of the optimizer
+# DO NOT CHANGE THE NAME, you can change the parameters
+OPTIMIZER = Adam(lr=0.0045)
+
+# DO NOT CHANGE THE NAME, you can change the parameters
+PARS = {
+    'outputs': 1,
+    'activation': 'relu',
+    'pooling_block': {'trainable': False},
+    'information_block': {'convolution': {'simple': 'normalized'}},
+    'connection_block': 'not_residual'
+}
+
+SPLIT = 'patient'
+
+# DO NOT REMOVE THIS LINE, it checks if the parameter choice is valid
+assert PARS.keys() == ALLOWED_PARS.keys()
+check_dict_subset(PARS, ALLOWED_PARS)
+assert SPLIT in ALLOWED_SPLIT
+
+
+
+########################################################################################################################
+# ======================================================================================================================
 # data
 # ======================================================================================================================
 ########################################################################################################################
@@ -300,108 +405,6 @@ if __name__ == '__main__':
     res = np_dice_coef(a, b)
     print(res)
 
-########################################################################################################################
-# ======================================================================================================================
-# check_pars
-# ======================================================================================================================
-########################################################################################################################
-# read-only file!!!
-
-# standard-module imports
-from keras.optimizers import Adam
-
-
-def check_dict_subset(subset, superset):
-    """Checks if one nested dictionary is a subset of another
-
-    :param subset: subset dictionary
-    :param superset: superset dictionary
-    :return: if failed: gives helpful print statements and assertion error
-             if successful, prints 'Your parameter choice is valid'
-    """
-    print("superset keys:", superset.keys())
-    print("subset keys:", subset.keys())
-    assert all(item in superset.keys() for item in subset.keys())
-    print("Subset keys is a subset of superset keys", all(item in superset.keys() for item in subset.keys()))
-    for key in subset.keys():
-        print("superset key items:", superset[key])
-        print("subset key items:", subset[key])
-        if type(superset[key]) == dict:
-            assert type(subset[key]) == type(superset[key])
-            check_dict_subset(subset[key], superset[key])
-        elif type(superset[key]) == list:
-            assert subset[key] in superset[key]
-            print("subset[key] item:", subset[key], " is in superset[key] items:", superset[key])
-        else:
-            print("Something went wrong. Uncomment the print statements in check_dict_subset() for easier debugging.")
-            return type(superset[key]), superset[key]
-
-    return 'Your parameter choice is valid'
-
-
-# Only change ALLOWED_PARS if adding new functionality
-ALLOWED_PARS = {
-    'outputs': [1, 2],
-    'activation': ['elu', 'relu'],
-    'pooling_block': {
-        'trainable': [True, False]},
-    'information_block': {
-        'inception': {
-            'v1': ['a', 'b'],
-            'v2': ['a', 'b', 'c'],
-            'et': ['a', 'b']},
-        'convolution': {
-            'simple': ['not_normalized', 'normalized'],
-            'dilated': ['not_normalized', 'normalized']}},
-    'connection_block': ['not_residual', 'residual']
-}
-
-# for reference: in combination, these parameter choice showed the best performance
-BEST_OPTIMIZER = Adam(lr=0.0045)
-BEST_PARS = {
-    'outputs': 2,
-    'activation': 'elu',
-    'pooling_block': {'trainable': True},
-    'information_block': {'inception': {'v2': 'b'}},
-    'connection_block': 'residual'
-}
-
-########################################################################################################################
-# ======================================================================================================================
-# configuration
-# ======================================================================================================================
-########################################################################################################################
-
-# standard-module imports
-import numpy as np
-from keras.layers import Input, add, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Dense
-from keras.layers import BatchNormalization, Dropout, Flatten, Lambda
-from keras.layers.advanced_activations import ELU, LeakyReLU
-from keras.models import Model
-from keras.optimizers import Adam
-
-# # separate-module imports
-# import check_pars
-
-# look up the format and the available parameters
-print(ALLOWED_PARS)
-
-# The result is very sensitive to the choice of the Learning Rate parameter  of the optimizer
-# DO NOT CHANGE THE NAME, you can change the parameters
-OPTIMIZER = Adam(lr=0.0045)
-
-# DO NOT CHANGE THE NAME, you can change the parameters
-PARS = {
-    'outputs': 1,
-    'activation': 'relu',
-    'pooling_block': {'trainable': False},
-    'information_block': {'convolution': {'simple': 'normalized'}},
-    'connection_block': 'not_residual'
-}
-
-# DO NOT REMOVE THIS LINE, it checks if the parameter choice is valid
-assert PARS.keys() == ALLOWED_PARS.keys()
-check_dict_subset(PARS, ALLOWED_PARS)
 
 ########################################################################################################################
 # ======================================================================================================================
@@ -418,8 +421,8 @@ from keras.layers.advanced_activations import ELU, LeakyReLU
 
 
 # # separate-module imports
-# import check_pars
-# import configuration
+# from check_pars import *
+# from configuration import *
 
 
 # ======================================================================================================================
@@ -1009,8 +1012,8 @@ from keras.optimizers import Adam
 
 # # separate-module imports
 # from metric import dice_coef, dice_coef_loss
-# import u_model_blocks
-# import configuration
+# from u_model_blocks import *
+# from configuration import *
 
 
 IMG_ROWS, IMG_COLS = 80, 112
@@ -1191,9 +1194,8 @@ from skimage.io import imsave
 # # separate-module imports
 #
 # from u_model import get_unet, IMG_COLS as img_cols, IMG_ROWS as img_rows
-# from data import load_train_data, load_test_data, load_patient_num
-# from utils import save_pickle, load_pickle, count_enum
-# import configuration
+# from data import load_train_data, load_test_data, load_patient_num, load_nerve_presence
+# from configuration import *
 
 
 def preprocess(imgs, to_rows=None, to_cols=None):
@@ -1303,6 +1305,9 @@ def train_and_predict():
     else:
         imgs_labels = [imgs_mask_train, imgs_present]
 
+    # TODO:
+    # use SPLIT_BY to create a version with SPLIT_BY = patient
+
     model.fit(imgs_train, imgs_labels,
               batch_size=128, epochs=50,
               verbose=1, shuffle=True,
@@ -1354,8 +1359,8 @@ from itertools import chain
 
 
 # # separate-module imports
-# from data import load_test_data
-# import configuration
+# from data import load_test_ids
+# from configuration import *
 
 def prep(img):
     """Prepare the image for to be used in a submission
