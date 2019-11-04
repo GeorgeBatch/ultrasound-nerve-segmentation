@@ -27,7 +27,7 @@ print(os.listdir("../input"))
 print(os.listdir("../input/ultrasound-nerve-segmentation"))
 
 # data
-data_path = os.path.join('/kaggle/input/ultrasound-nerve-segmentation', '')
+data_path = os.path.join('../input/ultrasound-nerve-segmentation', '')
 preprocess_path = os.path.join(_dir, 'np_data')
 
 if not os.path.exists(preprocess_path):

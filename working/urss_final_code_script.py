@@ -126,7 +126,7 @@ print(os.listdir("../input"))
 print(os.listdir("../input/ultrasound-nerve-segmentation"))
 
 # data
-data_path = os.path.join('/kaggle/input/ultrasound-nerve-segmentation', '')
+data_path = os.path.join('../input/ultrasound-nerve-segmentation', '')
 preprocess_path = os.path.join(_dir, 'np_data')
 
 if not os.path.exists(preprocess_path):
@@ -1167,6 +1167,7 @@ if __name__ == '__main__':
     print('params', model.count_params())
     print('layer num', len(model.layers))
 
+
 ########################################################################################################################
 # ======================================================================================================================
 # train
@@ -1175,9 +1176,8 @@ if __name__ == '__main__':
 
 # standard-module imports
 import numpy as np
-import cv2
+from skimage.transform import resize
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-
 
 # # separate-module imports
 # from u_model import get_unet, IMG_COLS as img_cols, IMG_ROWS as img_rows
@@ -1200,7 +1200,7 @@ def preprocess(imgs, to_rows=None, to_cols=None):
     print(imgs.shape)
     imgs_p = np.ndarray((imgs.shape[0], to_rows, to_cols, imgs.shape[3]), dtype=np.uint8)
     for i in range(imgs.shape[0]):
-        imgs_p[i, :, :, 0] = cv2.resize(imgs[i, :, :, 0], (to_cols, to_rows), interpolation=cv2.INTER_CUBIC)
+        imgs_p[i, :, :, 0] = resize(imgs[i, :, :, 0], (to_rows, to_cols), preserve_range=True)
     return imgs_p
 
 
@@ -1281,6 +1281,7 @@ def train_and_predict():
 
 if __name__ == '__main__':
     train_and_predict()
+
 
 ########################################################################################################################
 # ======================================================================================================================

@@ -6,7 +6,7 @@
 
 # standard-module imports
 import numpy as np
-import cv2
+from skimage.transform import resize
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 # separate-module imports
@@ -30,7 +30,7 @@ def preprocess(imgs, to_rows=None, to_cols=None):
     print(imgs.shape)
     imgs_p = np.ndarray((imgs.shape[0], to_rows, to_cols, imgs.shape[3]), dtype=np.uint8)
     for i in range(imgs.shape[0]):
-        imgs_p[i, :, :, 0] = cv2.resize(imgs[i, :, :, 0], (to_cols, to_rows), interpolation=cv2.INTER_CUBIC)
+        imgs_p[i, :, :, 0] = resize(imgs[i, :, :, 0], (to_rows, to_cols), preserve_range=True)
     return imgs_p
 
 
