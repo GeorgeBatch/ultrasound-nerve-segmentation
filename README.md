@@ -209,6 +209,7 @@ In case you want to experiment, I list the versions I tried here. To configure y
 [Inception v2 and v3]: https://arxiv.org/abs/1512.00567v3
 [Inception v4, Inception-ResNet]: https://arxiv.org/abs/1602.07261v2
 
+
 ### Running Edward Tyantov's code
 
 As a beginner, I found Marko Jocić's code and the instructions for running it accessible. So I did not document the code and do not intend publishing it here in the future. At the same time, I had many problems with trying to make Edward Tyantov's code run correctly. This is why I made a concatenated, simplified, modified, and documented version of Edward Tyantov's original code available on Kaggle and GitHub:
