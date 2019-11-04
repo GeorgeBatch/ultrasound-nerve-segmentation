@@ -113,7 +113,7 @@ check_dict_subset(PARS, ALLOWED_PARS)
 # standard-module imports
 import os
 import numpy as np
-import cv2
+from skimage.io import imread
 
 # Input data files are available in the "../input/" directory.
 

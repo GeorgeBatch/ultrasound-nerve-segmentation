@@ -14,7 +14,7 @@
 # standard-module imports
 import os
 import numpy as np
-import cv2
+from skimage.io import imread
 
 # Input data files are available in the "../input/" directory.
 
@@ -165,9 +165,9 @@ def create_train_data():
         # get the patient number of the image
         patient_num = image_name.split('_')[0]
         # read the image itself to an np.array
-        img = cv2.imread(os.path.join(train_data_path, image_name), cv2.IMREAD_GRAYSCALE)
+        img = imread(os.path.join(train_data_path, image_name), as_gray=True)
         # read the corresponding mask to an np.array
-        img_mask = cv2.imread(os.path.join(train_data_path, image_mask_name), cv2.IMREAD_GRAYSCALE)
+        img_mask = imread(os.path.join(train_data_path, image_mask_name), as_gray=True)
 
         imgs[i, :, :, 0] = img
         imgs_mask[i, :, :, 0] = img_mask
@@ -206,7 +206,7 @@ def create_test_data():
     print('Creating test images...')
     for image_name in images:
         img_id = int(image_name.split('.')[0])
-        img = cv2.imread(os.path.join(test_data_path, image_name), cv2.IMREAD_GRAYSCALE)
+        img = imread(os.path.join(test_data_path, image_name), as_gray=True)
 
         imgs[i, :, :, 0] = img
         imgs_id[i] = img_id
