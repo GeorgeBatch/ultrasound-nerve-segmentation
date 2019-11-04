@@ -66,3 +66,5 @@ BEST_PARS = {
     'information_block': {'inception': {'v2': 'b'}},
     'connection_block': 'residual'
 }
+
+print(check_dict_subset(BEST_PARS, ALLOWED_PARS))
