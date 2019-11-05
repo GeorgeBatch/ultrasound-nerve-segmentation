@@ -80,7 +80,7 @@ print(check_dict_subset(BEST_PARS, ALLOWED_PARS))
 from keras.optimizers import Adam
 
 # # separate-module imports
-# from check_pars import *
+# from check_pars import ALLOWED_PARS, check_dict_subset
 
 # look up the format and the available parameters
 print(ALLOWED_PARS)
@@ -415,11 +415,6 @@ if __name__ == '__main__':
 from keras.layers import add, concatenate, Conv2D, MaxPooling2D
 from keras.layers import BatchNormalization, Lambda
 from keras.layers.advanced_activations import ELU, LeakyReLU
-
-
-# # separate-module imports
-# from check_pars import *
-# from configuration import *
 
 
 # ======================================================================================================================
@@ -1009,8 +1004,8 @@ from keras import backend as K
 
 # # separate-module imports
 # from metric import dice_coef, dice_coef_loss
-# from u_model_blocks import *
-# from configuration import *
+# from u_model_blocks import pooling_block, connection_block, information_block
+# from configuration import ALLOWED_PARS, PARS
 
 
 IMG_ROWS, IMG_COLS = 80, 112
@@ -1184,8 +1179,8 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 # # separate-module imports
 # from u_model import get_unet, IMG_COLS as img_cols, IMG_ROWS as img_rows
-# from data import load_train_data, load_test_data, load_patient_num, load_nerve_presence
-# from configuration import *
+# from data import load_train_data, load_test_data, load_nerve_presence
+# from configuration import PARS, OPTIMIZER
 
 
 def preprocess(imgs, to_rows=None, to_cols=None):
@@ -1293,13 +1288,15 @@ if __name__ == '__main__':
 ########################################################################################################################
 
 # standard-module imports
+import os
+import numpy as np
 from skimage.transform import resize
 from itertools import chain
 
 
 # # separate-module imports
-# from data import load_test_ids
-# from configuration import *
+# from configuration import PARS
+# from data import load_test_ids, image_rows, image_cols, _dir
 
 def prep(img):
     """Prepare the image for to be used in a submission

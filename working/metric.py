@@ -12,8 +12,6 @@
 import numpy as np
 from keras import backend as K  # tensorflow backend
 
-smooth = 1.
-
 
 def dice_coef(mask_1, mask_2, smooth=1):
     """Compute the dice coefficient between two equal-sized masks.

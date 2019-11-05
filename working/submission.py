@@ -8,12 +8,14 @@
 ########################################################################################################################
 
 # standard-module imports
+import os
+import numpy as np
 from skimage.transform import resize
 from itertools import chain
 
 # separate-module imports
-from data import load_test_ids
 from configuration import PARS
+from data import load_test_ids, image_rows, image_cols, _dir
 
 
 def prep(img):
