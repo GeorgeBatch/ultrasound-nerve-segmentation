@@ -3,3 +3,4 @@
 test
 train
 np_data
+*.h5
