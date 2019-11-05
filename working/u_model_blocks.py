@@ -14,11 +14,6 @@ from keras.layers import BatchNormalization, Lambda
 from keras.layers.advanced_activations import ELU, LeakyReLU
 
 
-# separate-module imports
-from check_pars import *
-from configuration import *
-
-
 # ======================================================================================================================
 # utility blocks needed for internal performance
 # ======================================================================================================================

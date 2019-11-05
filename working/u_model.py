@@ -18,8 +18,8 @@ from keras import backend as K
 
 # # separate-module imports
 from metric import dice_coef, dice_coef_loss
-from u_model_blocks import *
-from configuration import *
+from u_model_blocks import pooling_block, connection_block, information_block
+from configuration import ALLOWED_PARS, PARS
 
 
 IMG_ROWS, IMG_COLS = 80, 112

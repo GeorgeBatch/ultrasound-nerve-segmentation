@@ -13,7 +13,7 @@ from itertools import chain
 
 # separate-module imports
 from data import load_test_ids
-from configuration import *
+from configuration import PARS
 
 
 def prep(img):

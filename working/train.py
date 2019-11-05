@@ -11,8 +11,8 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 # separate-module imports
 from u_model import get_unet, IMG_COLS as img_cols, IMG_ROWS as img_rows
-from data import load_train_data, load_test_data, load_patient_num, load_nerve_presence
-from configuration import *
+from data import load_train_data, load_test_data, load_nerve_presence
+from configuration import PARS, OPTIMIZER
 
 
 def preprocess(imgs, to_rows=None, to_cols=None):

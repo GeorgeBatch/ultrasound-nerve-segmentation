@@ -11,7 +11,7 @@
 from keras.optimizers import Adam
 
 # separate-module imports
-from check_pars import *
+from check_pars import ALLOWED_PARS, check_dict_subset
 
 # look up the format and the available parameters
 print(ALLOWED_PARS)
