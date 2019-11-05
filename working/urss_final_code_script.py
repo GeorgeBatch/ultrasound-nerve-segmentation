@@ -344,8 +344,6 @@ print(os.listdir(preprocess_path))
 import numpy as np
 from keras import backend as K  # tensorflow backend
 
-smooth = 1.
-
 
 def dice_coef(mask_1, mask_2, smooth=1):
     """Compute the dice coefficient between two equal-sized masks.
@@ -788,7 +786,7 @@ def inception_block_et(inputs, filters, activation='relu', version='b', pars={},
 
         change names of the outputs of the block verticals to c1, c2, c3, c4
 
-        use 'rusult' instead of 'res' to avoid confusion with residuals
+        use 'result' instead of 'res' to avoid confusion with residuals
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the

@@ -385,7 +385,7 @@ def inception_block_et(inputs, filters, activation='relu', version='b', pars={},
 
         change names of the outputs of the block verticals to c1, c2, c3, c4
 
-        use 'rusult' instead of 'res' to avoid confusion with residuals
+        use 'result' instead of 'res' to avoid confusion with residuals
 
     :param inputs: Input 4D tensor (samples, rows, cols, channels)
     :param filters: Integer, the dimensionality of the output space (i.e. the number of output filters in the
