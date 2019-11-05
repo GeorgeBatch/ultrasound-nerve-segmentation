@@ -106,7 +106,7 @@ If you would like to work with the code presented below on your sown machine, I 
 
 ### Setting up your directory
 
-If you decided to download code in separate files, first, you need to set up your directory structure as shown below. The structure mimics Kaggles's directory structure. On Kaggle, your script/notebook is in the working directory by default, while any data you upload goes inside the input directory.
+If you decided to download code in separate files, first, you need to set up your directory structure as shown below. The structure mimics Kaggle's directory structure. On Kaggle, your script/notebook is in the working directory by default, while any data you upload goes inside the input directory.
 
 ```
 - working
