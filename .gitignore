@@ -3,4 +3,5 @@
 test
 train
 np_data
+__pycache__
 *.h5
