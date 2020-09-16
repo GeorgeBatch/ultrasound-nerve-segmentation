@@ -10,16 +10,16 @@ The code was run on Kaggle machines in July 2019 - October 2019 using Python 3 i
 ## About the Project
 
 ### Project Details:
-* Title: Machine learning in the service of surgeons
-* Author: George Batchkala, g.batchkala@warwick.ac.uk
-* Supervisor: Dr Sigurd Assing, s.assing@warwick.ac.uk
-* Institution: University of Warwick
-* Department: Statistics
-* Project funding: Undergraduate Research Support Scheme at the University of Warwick
-* Project's official dates: July 1st 2019 - August 29th 2019
-* Project's real dates: July 1st 2019 - August 29th 2019, October 2019
-* Data Set: Kaggle "Ultrasound Nerve Segmentation" (2016) <br>https://www.kaggle.com/c/ultrasound-nerve-segmentation/overview
-* Project's GitHub repository: https://github.com/GeorgeBatch/ultrasound-nerve-segmentation
+- **Title:** Machine learning in the service of surgeons
+- **Author:** George Batchkala, george.batchkala@gmail.com
+- **Supervisor:** Dr Sigurd Assing, s.assing@warwick.ac.uk
+- **Institution:** University of Warwick
+- **Department:** Statistics
+- **Funding:** Undergraduate Research Support Scheme at the University of Warwick
+- **Official dates:** July 1st 2019 - August 29th 2019
+- **Real dates:** July 1st 2019 - August 29th 2019, October 2019
+- **Data:** Kaggle "Ultrasound Nerve Segmentation" (2016) <br>https://www.kaggle.com/c/ultrasound-nerve-segmentation/overview
+- **Project's GitHub repository:** https://github.com/GeorgeBatch/ultrasound-nerve-segmentation
 
 ### Motivation
 In summer 2019, I was conducting an undergraduate research project within the Statistics Department of the University of Warwick. Together with my supervisor, both being interested in machine learning, we chose to work on an old Kaggle competition. The choice can be explained by things we lacked and had at the moment.
