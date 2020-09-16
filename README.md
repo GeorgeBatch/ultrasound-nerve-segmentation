@@ -19,7 +19,8 @@ The code was run on Kaggle machines in July 2019 - October 2019 using Python 3 i
 - **Official dates:** July 1st 2019 - August 29th 2019
 - **Real dates:** July 1st 2019 - August 29th 2019, October 2019
 - **Data:** Kaggle "Ultrasound Nerve Segmentation" (2016) <br>https://www.kaggle.com/c/ultrasound-nerve-segmentation/overview
-- **Project's GitHub repository:** https://github.com/GeorgeBatch/ultrasound-nerve-segmentation
+- **GitHub repository:** https://github.com/GeorgeBatch/ultrasound-nerve-segmentation
+- **Main Kaggle notebook:** https://www.kaggle.com/gbatchkala/urss-2019-project-review
 
 ### Motivation
 In summer 2019, I was conducting an undergraduate research project within the Statistics Department of the University of Warwick. Together with my supervisor, both being interested in machine learning, we chose to work on an old Kaggle competition. The choice can be explained by things we lacked and had at the moment.
