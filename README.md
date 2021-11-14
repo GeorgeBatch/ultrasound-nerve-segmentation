@@ -1,7 +1,5 @@
 # Kaggle Ultrasound Nerve Segmentation Competition (2016)
 
-![Poster](https://github.com/GeorgeBatch/ultrasound-nerve-segmentation/blob/master/George_Batchkala_urss_poster.pdf)
-
 ## Warning!!!
 
 The code was run on Kaggle machines in July 2019 - October 2019 using Python 3 interpreter. It might stop working in the future due to the changes to Kaggle virtual environment and the updates of Python libraries used in this code. Please check [Kaggle documentation] and [kaggle/python docker image] for more information.
