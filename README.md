@@ -316,7 +316,7 @@ File name: train.py
 
 Credits: Marko Jocić
 
-Modifications: allow for training with 1 or 2 outputs of the U-nel-like architecture
+Modifications: allow for training with 1 or 2 outputs of the U-Net-like architecture
 
 Instructions: If used as as separate module, the "separate-module imports" part needs to be uncommented
 
@@ -327,6 +327,6 @@ File name: submission.py
 
 Credits: Edward Tyantov
 
-Modifications: allow for training with 1 or 2 outputs of the U-nel-like architecture
+Modifications: allow for training with 1 or 2 outputs of the U-Net-like architecture
 
 Instructions: If used as as separate module, the "separate-module imports" part needs to be uncommented
