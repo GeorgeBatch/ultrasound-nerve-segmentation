@@ -14,7 +14,7 @@ The code was run on Kaggle machines in July 2019 - October 2019 using Python 3 i
 ### Project Details:
 - **Title:** Machine learning in the service of surgeons
 - **Type:** Undergraduate Research Project
-- **Author:** George Batchkala, george.batchkala@gmail.com
+- **Author:** George Batchkala, george.batchkala@eng.ox.ac.uk
 - **Supervisor:** Dr Sigurd Assing, s.assing@warwick.ac.uk
 - **Institution:** University of Warwick
 - **Department:** Statistics
